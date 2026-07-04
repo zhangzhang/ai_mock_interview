@@ -485,7 +485,12 @@ function stripForSpeech(t){
 function speaking(){ return ("speechSynthesis" in window && speechSynthesis.speaking) || ttsPlaying; }
 function stopNeural(){ if(neuralAudio){ try{neuralAudio.pause();}catch(_){}} ttsPlaying=false; }
 function stopAllSpeech(){ if("speechSynthesis" in window) speechSynthesis.cancel(); stopNeural(); }
-function onSpeechEnd(){ if(!listening) setPresence("idle", interviewLive?"listening for you":"idle"); }
+function onSpeechEnd(){
+  if(!listening) setPresence("idle", interviewLive?"listening for you":"idle");
+  if(interviewLive && handsFree && !listening){
+    setTimeout(()=>{ if(interviewLive && handsFree && !listening) startListening(); }, 300);
+  }
+}
 
 function speak(text){
   if(muted) return;
@@ -545,6 +550,9 @@ async function speakNeural(text){
 /* ============================ voice in (STT) ============================ */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recog = null, listening = false, sttOK = !!SR, heard = "";
+const PAUSE_MS = 1200;
+let handsFree = false, silenceTimer = null;
+function clearSilenceTimer(){ if(silenceTimer){ clearTimeout(silenceTimer); silenceTimer=null; } }
 if(SR){
   recog = new SR(); recog.lang="en-US"; recog.interimResults=true; recog.continuous=true;
   recog.onresult = e=>{
@@ -554,10 +562,16 @@ if(SR){
       if(r.isFinal) heard += r[0].transcript+" "; else interim += r[0].transcript;
     }
     textInput.value = (heard+interim).trim();
+    if(handsFree){
+      clearSilenceTimer();
+      silenceTimer = setTimeout(()=>{
+        if(textInput.value.trim()) sendSpoken();
+      }, PAUSE_MS);
+    }
   };
   recog.onerror = ev=>{
     if(ev.error==="not-allowed"||ev.error==="service-not-allowed"){
-      sttOK=false; micBtn.disabled=true; stopListening();
+      sttOK=false; micBtn.disabled=true; handsFree=false; clearSilenceTimer(); stopListening();
       showBanner("<b>Mic blocked.</b> This preview frame won't allow the microphone. Download this file and open it in Chrome to talk out loud — for now, type your responses below.", "err");
     }
   };
@@ -578,13 +592,13 @@ async function startListening(){
     return;
   }
   stopAllSpeech();
-  heard=""; textInput.value="";
+  heard=""; textInput.value=""; clearSilenceTimer();
   try{ recog.start(); }catch(_){}
   listening=true; micBtn.classList.add("rec");
   if(!speaking()) setPresence("listening","listening…");
 }
 function stopListening(){
-  listening=false; micBtn.classList.remove("rec");
+  listening=false; micBtn.classList.remove("rec"); clearSilenceTimer();
   if(recog){ try{recog.stop();}catch(_){}}
   if(!speaking()) setPresence("idle", interviewLive?"idle":"idle");
 }
@@ -681,7 +695,7 @@ function startInterview(){
   ask("Let's begin the interview. Please greet me and present the problem.");
 }
 function endInterview(){
-  interviewLive=false; stopListening();
+  interviewLive=false; handsFree=false; stopListening();
   stopAllSpeech();
   [textInput,sendBtn,shareBtn,hintBtn,feedbackBtn,micBtn].forEach(el=>el.disabled=true);
   startBtn.textContent="Start interview"; startBtn.classList.remove("live");
@@ -694,7 +708,15 @@ muteBtn.onclick = ()=>{
   muteBtn.textContent = muted?"🔇":"🔊";
   if(muted) stopAllSpeech();
 };
-micBtn.onclick = ()=> listening ? (stopListening(), sendSpoken()) : startListening();
+micBtn.onclick = ()=>{
+  if(listening){
+    handsFree = false;
+    stopListening(); sendSpoken();
+  }else{
+    handsFree = true;
+    startListening();
+  }
+};
 
 let drawerAutoFoldArmed = true;
 function updateChip(){
