@@ -562,7 +562,7 @@ if(SR){
       if(r.isFinal) heard += r[0].transcript+" "; else interim += r[0].transcript;
     }
     textInput.value = (heard+interim).trim();
-    if(handsFree){
+    if(handsFree && listening){
       clearSilenceTimer();
       silenceTimer = setTimeout(()=>{
         if(textInput.value.trim()) sendSpoken();
