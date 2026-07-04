@@ -200,7 +200,7 @@
     </div>
     <div class="spacer"></div>
     <select id="problemSelect" title="Choose a problem"></select>
-    <button class="icon-btn" id="voiceBtn" title="Voice settings">🎙</button>
+    <button class="icon-btn" id="voiceBtn" title="Settings">🎙</button>
     <button class="icon-btn on" id="muteBtn" title="Sam's voice on/off">🔊</button>
     <button class="start-btn" id="startBtn">Start interview</button>
   </header>
@@ -499,7 +499,7 @@ function onSpeechEnd(){
 }
 
 function speak(text){
-  if(muted) return;
+  if(muted){ onSpeechEnd(); return; }
   const oaKey = (document.getElementById("openaiKey")||{}).value;
   if(ttsMode==="neural" && oaKey && oaKey.trim()){ speakNeural(text); return; }
   speakBrowser(text);
