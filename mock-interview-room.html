@@ -696,12 +696,47 @@ muteBtn.onclick = ()=>{
 };
 micBtn.onclick = ()=> listening ? (stopListening(), sendSpoken()) : startListening();
 
+let drawerAutoFoldArmed = true;
+function updateChip(){
+  const parts=[];
+  const key=(document.getElementById("apiKey").value||"").trim();
+  if(key) parts.push("✓ Claude connected");
+  parts.push(ttsMode==="neural"?"Neural voice":"Browser voice");
+  parts.push(speechRate.toFixed(1)+"x");
+  document.getElementById("chipText").textContent = parts.join(" · ");
+}
+function openDrawer(){
+  document.getElementById("settingsDrawer").style.display="flex";
+  document.getElementById("chipRow").style.display="none";
+  voiceBtn.classList.add("on");
+}
+function closeDrawerToChip(){
+  updateChip();
+  document.getElementById("settingsDrawer").style.display="none";
+  document.getElementById("chipRow").style.display="flex";
+  voiceBtn.classList.remove("on");
+}
+function foldOnce(){
+  if(!drawerAutoFoldArmed) return;
+  drawerAutoFoldArmed = false;
+  closeDrawerToChip();
+}
+function armVoiceAutoFold(){
+  document.getElementById("ttsSeg").addEventListener("click", foldOnce);
+  document.getElementById("speedRange").addEventListener("input", foldOnce);
+  document.getElementById("voiceSel").addEventListener("change", foldOnce);
+  document.getElementById("openaiVoice").addEventListener("change", foldOnce);
+  document.getElementById("openaiModel").addEventListener("change", foldOnce);
+  document.getElementById("testVoice").addEventListener("click", foldOnce);
+}
 voiceBtn.onclick = ()=>{
-  const p=document.getElementById("settingsDrawer");
-  const open = p.style.display==="none";
-  p.style.display = open?"flex":"none";
-  voiceBtn.classList.toggle("on", open);
+  const open = document.getElementById("settingsDrawer").style.display==="none";
+  if(open) openDrawer(); else closeDrawerToChip();
 };
+document.getElementById("editSettings").onclick = openDrawer;
+document.getElementById("apiKey").addEventListener("input", ()=>{
+  if((document.getElementById("apiKey").value||"").trim()) foldOnce();
+});
 document.getElementById("ttsSeg").addEventListener("click", e=>{
   const b=e.target.closest("button[data-mode]"); if(!b) return;
   ttsMode=b.dataset.mode;
@@ -738,6 +773,7 @@ window.addEventListener("load", ()=>{
   const embedded = (window.self !== window.top);
   if(embedded){
     document.getElementById("connectionSection").style.display="none";
+    armVoiceAutoFold();
     if(SR) showBanner("<b>You're viewing this inside a preview frame, which blocks the microphone.</b> To talk out loud, download this file (the ⤓ icon) and open it in Chrome. You can type here for now — Sam still speaks and sees your code.");
   }else{
     showBanner("<b>Running locally — paste your Anthropic API key above to wake Sam.</b> Get one at console.anthropic.com. It stays in this browser tab and is sent only to Anthropic; a full mock costs a few cents. The mic works here too — push it and allow access.");
