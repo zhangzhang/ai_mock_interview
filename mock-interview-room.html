@@ -460,6 +460,7 @@ let preferredVoice = null;
 let ttsMode = "browser";       // 'browser' | 'neural'
 let ttsPlaying = false;        // true while neural audio is playing
 let neuralAudio = null;
+let speechRate = 1.0;          // 0.5 - 2.0, controls both browser and neural TTS pace
 function loadVoices(){
   const vs = speechSynthesis.getVoices();
   if(!preferredVoice){
@@ -497,7 +498,7 @@ function speakBrowser(text){
   stopAllSpeech();
   const u = new SpeechSynthesisUtterance(stripForSpeech(text));
   if(preferredVoice) u.voice = preferredVoice;
-  u.rate = 1.02; u.pitch = 1.0;
+  u.rate = speechRate; u.pitch = 1.0;
   u.onstart = ()=>setPresence("speaking","speaking…");
   u.onend   = onSpeechEnd;
   speechSynthesis.speak(u);
@@ -510,7 +511,15 @@ async function speakNeural(text){
   setPresence("speaking","speaking…");
   try{
     const body = { model, voice, input:stripForSpeech(text), response_format:"mp3" };
-    if(model==="gpt-4o-mini-tts") body.instructions = "You are a calm, warm, professional technical interviewer. Speak naturally, at a measured, unhurried pace.";
+    if(model==="tts-1"||model==="tts-1-hd"){
+      body.speed = speechRate;
+    }
+    if(model==="gpt-4o-mini-tts"){
+      let pace = "";
+      if(speechRate < 0.85) pace = " Speak at a noticeably slower, more deliberate pace.";
+      else if(speechRate > 1.15) pace = " Speak at a noticeably brisker pace.";
+      body.instructions = "You are a calm, warm, professional technical interviewer. Speak naturally, at a measured, unhurried pace."+pace;
+    }
     const res = await fetch("https://api.openai.com/v1/audio/speech",{
       method:"POST",
       headers:{ "Authorization":"Bearer "+key, "Content-Type":"application/json" },
@@ -699,6 +708,10 @@ document.getElementById("ttsSeg").addEventListener("click", e=>{
   [...document.querySelectorAll("#ttsSeg button")].forEach(x=>x.classList.toggle("on", x===b));
   document.getElementById("browserRow").style.display = ttsMode==="browser"?"flex":"none";
   document.getElementById("neuralRow").style.display  = ttsMode==="neural" ?"flex":"none";
+});
+document.getElementById("speedRange").addEventListener("input", e=>{
+  speechRate = parseFloat(e.target.value);
+  document.getElementById("speedLabel").textContent = speechRate.toFixed(1)+"x";
 });
 document.getElementById("testVoice").onclick = ()=>{
   const prev=muted; muted=false;
