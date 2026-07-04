@@ -150,25 +150,33 @@
   .banner{margin:6px 18px 8px;padding:10px 13px;border-radius:9px;font-size:12.5px;line-height:1.48;
     background:var(--amber-soft);border:1px solid rgba(242,166,59,.35);color:var(--amber-2)}
   .banner.err{background:rgba(229,115,94,.12);border-color:rgba(229,115,94,.42);color:#f0a091}
-  .keyrow{display:flex;gap:8px;margin:2px 18px 8px}
-  .keyrow input{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;
+  .chip-row{margin:6px 18px 8px;display:flex;align-items:center;gap:10px;padding:9px 12px;
+    border:1px solid var(--line);border-radius:9px;background:var(--panel-2);font-size:12.5px}
+  .chip-row #chipText{flex:1;color:var(--text)}
+  .drawer{margin:2px 18px 8px;padding:13px 14px;border:1px solid var(--line);border-radius:10px;
+    background:var(--panel-2);display:flex;flex-direction:column;gap:14px}
+  .drawer-section{display:flex;flex-direction:column;gap:9px}
+  .drawer-label{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .keyrow{display:flex;gap:8px}
+  .keyrow input{background:#14161d;border:1px solid var(--line);border-radius:9px;
     padding:9px 11px;color:var(--text);font-size:12.5px;font-family:var(--mono)}
   .keyrow input#apiKey{flex:1;min-width:0}
   .keyrow input#apiModel{width:172px;flex:0 0 172px}
   .keyrow input:focus{outline:none;border-color:var(--amber)}
-  .vpanel{margin:2px 18px 8px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;
-    background:var(--panel-2);display:flex;flex-direction:column;gap:9px}
+  .vpanel{display:flex;flex-direction:column;gap:9px}
   .seg{display:inline-flex;background:#14161d;border:1px solid var(--line);border-radius:8px;
     overflow:hidden;width:fit-content}
   .seg button{padding:6px 13px;font-size:12px;color:var(--muted)}
   .seg button.on{background:var(--amber);color:#231703;font-weight:650}
-  .vrow{display:flex;gap:8px}
+  .vrow{display:flex;gap:8px;align-items:center}
   .vpanel select,.vpanel input{background:#14161d;border:1px solid var(--line);border-radius:8px;
     padding:8px 10px;color:var(--text);font-size:12.5px;font-family:var(--ui)}
   .vpanel select{flex:1;min-width:0}
   .vpanel input#openaiKey{flex:1;min-width:0;font-family:var(--mono)}
   .vpanel select#openaiVoice,.vpanel select#openaiModel{flex:0 0 130px;width:130px}
   #testVoice{width:fit-content}
+  .speed-row input[type=range]{flex:1;accent-color:var(--amber)}
+  #speedLabel{font-size:12px;color:var(--text);width:38px;text-align:right;font-variant-numeric:tabular-nums}
 
   @media(max-width:860px){
     .stage{flex-direction:column}
@@ -214,34 +222,50 @@
           <div class="status" id="status">idle</div>
         </div>
         <div class="banner" id="banner" style="display:none"></div>
-        <div class="keyrow" id="keyrow" style="display:none">
-          <input id="apiKey" type="password" autocomplete="off" placeholder="Anthropic API key (sk-ant-…) — stays in this tab, sent only to Anthropic">
-          <input id="apiModel" type="text" spellcheck="false" value="claude-sonnet-5" title="Model to use with your key">
+        <div class="chip-row" id="chipRow" style="display:none">
+          <span id="chipText"></span>
+          <button class="pill" id="editSettings">Edit</button>
         </div>
-        <div class="vpanel" id="vpanel" style="display:none">
-          <div class="seg" id="ttsSeg">
-            <button data-mode="browser" class="on">Browser voice</button>
-            <button data-mode="neural">Neural · OpenAI</button>
+        <div class="drawer" id="settingsDrawer" style="display:none">
+          <div class="drawer-section" id="connectionSection">
+            <div class="drawer-label">Connection</div>
+            <div class="keyrow" id="keyrow">
+              <input id="apiKey" type="password" autocomplete="off" placeholder="Anthropic API key (sk-ant-…) — stays in this tab, sent only to Anthropic">
+              <input id="apiModel" type="text" spellcheck="false" value="claude-sonnet-5" title="Model to use with your key">
+            </div>
           </div>
-          <div class="vrow" id="browserRow">
-            <select id="voiceSel" title="Choose a browser voice"></select>
+          <div class="drawer-section" id="voiceSection">
+            <div class="drawer-label">Voice</div>
+            <div class="vpanel" id="vpanel">
+              <div class="seg" id="ttsSeg">
+                <button data-mode="browser" class="on">Browser voice</button>
+                <button data-mode="neural">Neural · OpenAI</button>
+              </div>
+              <div class="vrow speed-row">
+                <input type="range" id="speedRange" min="0.5" max="2" step="0.1" value="1" title="Sam's speech speed">
+                <span id="speedLabel">1.0x</span>
+              </div>
+              <div class="vrow" id="browserRow">
+                <select id="voiceSel" title="Choose a browser voice"></select>
+              </div>
+              <div class="vrow" id="neuralRow" style="display:none">
+                <input id="openaiKey" type="password" autocomplete="off" placeholder="OpenAI API key (sk-…) — for the neural voice">
+                <select id="openaiVoice" title="Voice">
+                  <option value="alloy">Alloy</option><option value="ash">Ash</option>
+                  <option value="ballad">Ballad</option><option value="coral">Coral</option>
+                  <option value="echo">Echo</option><option value="fable">Fable</option>
+                  <option value="onyx" selected>Onyx</option><option value="nova">Nova</option>
+                  <option value="sage">Sage</option><option value="shimmer">Shimmer</option>
+                </select>
+                <select id="openaiModel" title="Model">
+                  <option value="gpt-4o-mini-tts" selected>4o-mini-tts</option>
+                  <option value="tts-1-hd">tts-1-hd</option>
+                  <option value="tts-1">tts-1</option>
+                </select>
+              </div>
+              <button class="pill" id="testVoice">Test voice</button>
+            </div>
           </div>
-          <div class="vrow" id="neuralRow" style="display:none">
-            <input id="openaiKey" type="password" autocomplete="off" placeholder="OpenAI API key (sk-…) — for the neural voice">
-            <select id="openaiVoice" title="Voice">
-              <option value="alloy">Alloy</option><option value="ash">Ash</option>
-              <option value="ballad">Ballad</option><option value="coral">Coral</option>
-              <option value="echo">Echo</option><option value="fable">Fable</option>
-              <option value="onyx" selected>Onyx</option><option value="nova">Nova</option>
-              <option value="sage">Sage</option><option value="shimmer">Shimmer</option>
-            </select>
-            <select id="openaiModel" title="Model">
-              <option value="gpt-4o-mini-tts" selected>4o-mini-tts</option>
-              <option value="tts-1-hd">tts-1-hd</option>
-              <option value="tts-1">tts-1</option>
-            </select>
-          </div>
-          <button class="pill" id="testVoice">Test voice</button>
         </div>
         <div class="transcript" id="transcript"></div>
         <div class="talkbar">
@@ -664,7 +688,7 @@ muteBtn.onclick = ()=>{
 micBtn.onclick = ()=> listening ? (stopListening(), sendSpoken()) : startListening();
 
 voiceBtn.onclick = ()=>{
-  const p=document.getElementById("vpanel");
+  const p=document.getElementById("settingsDrawer");
   const open = p.style.display==="none";
   p.style.display = open?"flex":"none";
   voiceBtn.classList.toggle("on", open);
@@ -696,13 +720,13 @@ problemSelect.onchange = ()=>{
 window.addEventListener("load", ()=>{
   renderSelect(); renderProblem(); initEditor();
   if("speechSynthesis" in window) loadVoices();
-  document.getElementById("vpanel").style.display="flex"; voiceBtn.classList.add("on");
+  document.getElementById("settingsDrawer").style.display="flex"; voiceBtn.classList.add("on");
   addMsg("system","Choose a problem, then press Start interview. Sam will greet you — talk it through out loud, like a real onsite.");
   const embedded = (window.self !== window.top);
   if(embedded){
+    document.getElementById("connectionSection").style.display="none";
     if(SR) showBanner("<b>You're viewing this inside a preview frame, which blocks the microphone.</b> To talk out loud, download this file (the ⤓ icon) and open it in Chrome. You can type here for now — Sam still speaks and sees your code.");
   }else{
-    document.getElementById("keyrow").style.display="flex";
     showBanner("<b>Running locally — paste your Anthropic API key above to wake Sam.</b> Get one at console.anthropic.com. It stays in this browser tab and is sent only to Anthropic; a full mock costs a few cents. The mic works here too — push it and allow access.");
   }
   if(!("speechSynthesis" in window)) setNote("Your browser can't do voice output — Sam will still type. Chrome works best.", true);
