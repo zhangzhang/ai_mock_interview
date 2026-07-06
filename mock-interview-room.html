@@ -558,10 +558,9 @@ async function speakNeural(text){
   stopAllSpeech();
   setPresence("speaking","speaking…");
   try{
-    const body = { model, voice, input:stripForSpeech(text), response_format:"mp3" };
-    if(model==="tts-1"||model==="tts-1-hd"){
-      body.speed = speechRate;
-    }
+    // Send speed for every model. tts-1/tts-1-hd honor it directly; gpt-4o-mini-tts
+    // accepts it (harmless) but can ignore it, so we also nudge pace via instructions.
+    const body = { model, voice, input:stripForSpeech(text), response_format:"mp3", speed: speechRate };
     if(model==="gpt-4o-mini-tts"){
       let pace = "";
       if(speechRate < 0.85) pace = " Speak at a noticeably slower, more deliberate pace.";
