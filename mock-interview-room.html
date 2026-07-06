@@ -273,7 +273,7 @@
             </div>
           </div>
           <div class="modal-section" id="voiceSection">
-            <div class="modal-label">Voice</div>
+            <div class="modal-label">Interviewer voice</div>
             <div class="vpanel" id="vpanel">
               <div class="seg" id="ttsSeg">
                 <button data-mode="browser" class="on">Browser voice</button>
@@ -292,13 +292,13 @@
                 <select id="voiceSel" title="Choose a browser voice"></select>
               </div>
               <div class="vrow" id="neuralRow" style="display:none">
-                <input id="openaiKey" type="password" autocomplete="off" placeholder="OpenAI API key (sk-…) — for the neural voice">
                 <select id="openaiVoice" title="Voice">
                   <option value="alloy">Alloy</option><option value="ash">Ash</option>
                   <option value="ballad">Ballad</option><option value="coral">Coral</option>
                   <option value="echo">Echo</option><option value="fable">Fable</option>
                   <option value="onyx" selected>Onyx</option><option value="nova">Nova</option>
                   <option value="sage">Sage</option><option value="shimmer">Shimmer</option>
+                  <option value="verse">Verse</option><option value="marin">Marin</option><option value="cedar">Cedar</option>
                 </select>
                 <select id="openaiModel" title="Model">
                   <option value="gpt-4o-mini-tts" selected>4o-mini-tts</option>
@@ -306,6 +306,7 @@
                   <option value="tts-1">tts-1</option>
                 </select>
               </div>
+              <div class="key-note" id="voiceNote" style="display:none">Marin, Cedar, Verse &amp; Ballad need the 4o-mini-tts model.</div>
               <button class="pill" id="testVoice">Test voice</button>
             </div>
           </div>
@@ -560,8 +561,8 @@ function onSpeechEnd(){
 
 function speak(text){
   if(muted){ onSpeechEnd(); return; }
-  const oaKey = (document.getElementById("openaiKey")||{}).value;
-  if(ttsMode==="neural" && oaKey && oaKey.trim()){ speakNeural(text); return; }
+  const oaKey = (document.getElementById("apiKey").value||"").trim();
+  if(ttsMode==="neural" && oaKey){ speakNeural(text); return; }
   speakBrowser(text);
 }
 function speakBrowser(text){
@@ -575,7 +576,7 @@ function speakBrowser(text){
   speechSynthesis.speak(u);
 }
 async function speakNeural(text){
-  const key = document.getElementById("openaiKey").value.trim();
+  const key = (document.getElementById("apiKey").value||"").trim();
   const voice = document.getElementById("openaiVoice").value;
   const model = document.getElementById("openaiModel").value;
   stopAllSpeech();
@@ -808,6 +809,7 @@ document.getElementById("ttsSeg").addEventListener("click", e=>{
   [...document.querySelectorAll("#ttsSeg button")].forEach(x=>x.classList.toggle("on", x===b));
   document.getElementById("browserRow").style.display = ttsMode==="browser"?"flex":"none";
   document.getElementById("neuralRow").style.display  = ttsMode==="neural" ?"flex":"none";
+  document.getElementById("voiceNote").style.display  = ttsMode==="neural" ?"block":"none";
 });
 document.getElementById("speedSelect").addEventListener("change", e=>{
   speechRate = parseFloat(e.target.value);
