@@ -59,8 +59,8 @@
   .stage{flex:1;display:flex;min-height:0}
 
   /* problem sheet */
-  .problem{flex:0 0 40%;max-width:560px;background:var(--panel);color:var(--text);
-    overflow:auto;padding:26px 30px 40px;border-right:1px solid var(--line)}
+  .problem{flex:0 0 var(--problem-w,40%);background:var(--panel);color:var(--text);
+    overflow:auto;padding:26px 30px 40px}
   .problem .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
     font-weight:700;margin-bottom:10px}
   .problem h2{font-size:24px;margin:0 0 12px;line-height:1.15;font-weight:750;letter-spacing:-.01em}
@@ -79,7 +79,10 @@
   .problem .body h4{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);
     margin:22px 0 9px}
 
-  .grip{flex:0 0 1px;background:var(--line)}
+  .grip{flex:0 0 6px;background:var(--line);cursor:col-resize;transition:background .15s;
+    position:relative;z-index:2}
+  .grip:hover{background:#3a3f4d}
+  .grip.dragging{background:var(--amber)}
 
   /* work pane */
   .work{flex:1;display:flex;flex-direction:column;min-width:0}
@@ -824,6 +827,34 @@ problemSelect.onchange = ()=>{
   currentProblem = PROBLEMS.find(p=>p.id===problemSelect.value)||PROBLEMS[0];
   renderProblem(); if(!interviewLive) setCode(currentProblem.starter);
 };
+
+/* ============================ resizable divider ============================ */
+(function(){
+  const grip = document.querySelector(".grip");
+  const stage = document.querySelector(".stage");
+  const problem = document.querySelector(".problem");
+  if(!grip || !stage || !problem) return;
+  let dragging=false;
+  function onMove(e){
+    if(!dragging) return;
+    const rect = stage.getBoundingClientRect();
+    let w = e.clientX - rect.left;
+    const min=280, max=rect.width-360;         // keep a usable width on both sides
+    w = Math.max(min, Math.min(max, w));
+    problem.style.setProperty("--problem-w", w+"px");
+  }
+  grip.addEventListener("mousedown", e=>{
+    dragging=true; grip.classList.add("dragging");
+    document.body.style.cursor="col-resize"; document.body.style.userSelect="none";
+    e.preventDefault();
+  });
+  window.addEventListener("mousemove", onMove);
+  window.addEventListener("mouseup", ()=>{
+    if(!dragging) return;
+    dragging=false; grip.classList.remove("dragging");
+    document.body.style.cursor=""; document.body.style.userSelect="";
+  });
+})();
 
 /* ============================ boot ============================ */
 window.addEventListener("load", ()=>{
