@@ -19,7 +19,6 @@
   :root{
     --ink:#16181f; --panel:#1b1e27; --panel-2:#20242f; --line:#2b2f3c;
     --text:#e6e7ea; --muted:#8b90a0;
-    --paper:#e8e5db; --paper-ink:#23252d; --paper-soft:#63656f; --paper-line:#d3cfc2;
     --amber:#f2a63b; --amber-2:#ffbe5c; --amber-soft:rgba(242,166,59,.14);
     --indigo:#7c83ff; --indigo-soft:rgba(124,131,255,.14);
     --green:#4ec89a; --red:#e5735e;
@@ -60,23 +59,24 @@
   .stage{flex:1;display:flex;min-height:0}
 
   /* problem sheet */
-  .problem{flex:0 0 40%;max-width:560px;background:var(--paper);color:var(--paper-ink);
-    overflow:auto;padding:26px 30px 40px}
-  .problem .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper-soft);
+  .problem{flex:0 0 40%;max-width:560px;background:var(--panel);color:var(--text);
+    overflow:auto;padding:26px 30px 40px;border-right:1px solid var(--line)}
+  .problem .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
     font-weight:700;margin-bottom:10px}
   .problem h2{font-size:24px;margin:0 0 12px;line-height:1.15;font-weight:750;letter-spacing:-.01em}
   .chip{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
     padding:3px 9px;border-radius:999px;margin-right:8px}
-  .chip.easy{background:#cfe9d8;color:#1d6b45} .chip.medium{background:#f2e2c2;color:#8a5a12}
-  .chip.hard{background:#f0cfc8;color:#8f3020}
-  .chip.pattern{background:#dcdacb;color:#4d4c40}
-  .problem .body{margin-top:20px;font-size:14.5px;line-height:1.62;color:#33353d}
+  .chip.easy{background:rgba(78,200,154,.16);color:var(--green)}
+  .chip.medium{background:var(--amber-soft);color:var(--amber-2)}
+  .chip.hard{background:rgba(229,115,94,.16);color:var(--red)}
+  .chip.pattern{background:var(--panel-2);color:var(--muted)}
+  .problem .body{margin-top:20px;font-size:14.5px;line-height:1.62;color:var(--text)}
   .problem .body p{margin:0 0 14px}
-  .problem .body strong{color:var(--paper-ink)}
-  .problem .body pre{background:#dedbcf;border:1px solid var(--paper-line);border-radius:8px;
-    padding:12px 14px;font-family:var(--mono);font-size:13px;line-height:1.5;overflow:auto;color:#2c2e35;margin:0 0 14px}
+  .problem .body strong{color:var(--text)}
+  .problem .body pre{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
+    padding:12px 14px;font-family:var(--mono);font-size:13px;line-height:1.5;overflow:auto;color:var(--text);margin:0 0 14px}
   .problem .body ul{margin:0 0 14px;padding-left:20px} .problem .body li{margin:5px 0}
-  .problem .body h4{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--paper-soft);
+  .problem .body h4{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);
     margin:22px 0 9px}
 
   .grip{flex:0 0 1px;background:var(--line)}
