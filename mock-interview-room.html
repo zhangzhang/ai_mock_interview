@@ -615,7 +615,7 @@ async function speakNeural(text){
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recog = null, listening = false, sttOK = !!SR, heard = "";
 const PAUSE_MS = 1200;
-let handsFree = false, silenceTimer = null;
+let handsFree = false, silenceTimer = null, micGranted = false;
 function clearSilenceTimer(){ if(silenceTimer){ clearTimeout(silenceTimer); silenceTimer=null; } }
 if(SR){
   recog = new SR(); recog.lang="en-US"; recog.interimResults=true; recog.continuous=true;
@@ -644,16 +644,22 @@ if(SR){
 async function startListening(){
   if(!SR){ setNote("Voice input isn't supported in this browser — try Chrome, or type your response.", true); return; }
   if(listening) return;
-  // Force the browser's permission prompt so we can tell exactly why the mic fails.
-  try{
-    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
-      const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-      stream.getTracks().forEach(t=>t.stop()); // permission is all we needed
+  // Probe the mic ONCE to surface a clear error if it's blocked. Repeating this on
+  // every turn re-prompts on file:// origins (which don't persist permission), which
+  // is jarring in hands-free mode — so after the first grant we skip it and let
+  // recognition reuse the permission. Serve over http://localhost for a single prompt.
+  if(!micGranted){
+    try{
+      if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+        const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+        stream.getTracks().forEach(t=>t.stop()); // permission is all we needed
+      }
+      micGranted = true;
+    }catch(err){
+      sttOK=false; micBtn.disabled=true; micBtn.classList.remove("rec");
+      showBanner("<b>Mic blocked ("+((err&&err.name)||"denied")+").</b> This preview frame won't allow the microphone. Download this file and open it in Chrome to talk out loud — for now, type your responses below.", "err");
+      return;
     }
-  }catch(err){
-    sttOK=false; micBtn.disabled=true; micBtn.classList.remove("rec");
-    showBanner("<b>Mic blocked ("+((err&&err.name)||"denied")+").</b> This preview frame won't allow the microphone. Download this file and open it in Chrome to talk out loud — for now, type your responses below.", "err");
-    return;
   }
   stopAllSpeech();
   heard=""; textInput.value=""; clearSilenceTimer();
