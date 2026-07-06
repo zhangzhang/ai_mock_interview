@@ -208,7 +208,7 @@
     <div class="spacer"></div>
     <select id="problemSelect" title="Choose a problem"></select>
     <button class="icon-btn" id="voiceBtn" title="Settings">⚙</button>
-    <button class="icon-btn on" id="muteBtn" title="Sam's voice on/off">🔊</button>
+    <button class="icon-btn on" id="muteBtn" title="Interviewer's voice on/off">🔊</button>
     <button class="start-btn" id="startBtn">Start interview</button>
   </header>
 
@@ -303,7 +303,7 @@
           <button class="mic" id="micBtn" title="Push to talk" disabled>🎤</button>
           <input id="textInput" placeholder="Press Start, then talk out loud — or type here" disabled>
           <button class="pill send" id="sendBtn" disabled>Send</button>
-          <button class="pill" id="shareBtn" disabled title="Let Sam look at your current code">Share code</button>
+          <button class="pill" id="shareBtn" disabled title="Let the interviewer look at your current code">Share code</button>
           <button class="pill hint" id="hintBtn" disabled>Hint</button>
           <button class="pill" id="feedbackBtn" disabled>End &amp; feedback</button>
         </div>
@@ -493,7 +493,7 @@ async function ask(userContent){
     conversation.pop(); // drop the failed turn so history stays valid for a retry
     const msg = (e && e.message) ? e.message : String(e);
     addMsg("system","(Couldn't reach your interviewer: "+msg+")");
-    if(!key) showBanner("<b>Sam needs an API key when this runs outside Claude.ai.</b> Paste your Anthropic key in the field above (get one at console.anthropic.com), then try again.","err");
+    if(!key) showBanner("<b>"+interviewerDisplayName()+" needs an Anthropic API key when this runs outside Claude.ai.</b> Open Settings (the ⚙ icon) and paste your Anthropic key — that's the key for Claude, separate from the OpenAI voice key. Get one at console.anthropic.com, then try again.","err");
     setPresence("idle","idle");
   }
 }
@@ -734,8 +734,8 @@ function startInterview(){
   problemSelect.disabled = true;
   document.getElementById("interviewerName").disabled = true;
   document.getElementById("interviewerPronoun").disabled = true;
-  setNote(sttOK ? "Push the mic and think out loud, just like the real thing. Sam can see your code."
-                : "Mic not available here — type your reasoning. Sam still speaks and sees your code.", !sttOK);
+  setNote(sttOK ? "Push the mic and think out loud, just like the real thing. "+interviewerDisplayName()+" can see your code."
+                : "Mic not available here — type your reasoning. "+interviewerDisplayName()+" still speaks and sees your code.", !sttOK);
   addMsg("system","Interview started — "+currentProblem.title);
   ask("Let's begin the interview. Please greet me and present the problem.");
 }
@@ -811,16 +811,16 @@ problemSelect.onchange = ()=>{
 window.addEventListener("load", ()=>{
   renderSelect(); renderProblem(); initEditor();
   if("speechSynthesis" in window) loadVoices();
-  addMsg("system","Choose a problem, then press Start interview. Sam will greet you — talk it through out loud, like a real onsite.");
+  addMsg("system","Choose a problem, then press Start interview. "+interviewerDisplayName()+" will greet you — talk it through out loud, like a real onsite.");
   const embedded = (window.self !== window.top);
   if(embedded){
     document.getElementById("connectionSection").style.display="none";
-    if(SR) showBanner("<b>You're viewing this inside a preview frame, which blocks the microphone.</b> To talk out loud, download this file (the ⤓ icon) and open it in Chrome. You can type here for now — Sam still speaks and sees your code.");
+    if(SR) showBanner("<b>You're viewing this inside a preview frame, which blocks the microphone.</b> To talk out loud, download this file (the ⤓ icon) and open it in Chrome. You can type here for now — "+interviewerDisplayName()+" still speaks and sees your code.");
   }else{
     openSettings();
-    showBanner("<b>Running locally — paste your Anthropic API key in Settings to wake Sam.</b> Get one at console.anthropic.com. It stays in this browser tab and is sent only to Anthropic; a full mock costs a few cents. The mic works here too — push it and allow access.");
+    showBanner("<b>Running locally — paste your Anthropic API key in Settings to wake "+interviewerDisplayName()+".</b> Get one at console.anthropic.com. It stays in this browser tab and is sent only to Anthropic; a full mock costs a few cents. The mic works here too — push it and allow access.");
   }
-  if(!("speechSynthesis" in window)) setNote("Your browser can't do voice output — Sam will still type. Chrome works best.", true);
-  else if(!sttOK) setNote("Voice input isn't supported here — you can type responses. Sam speaks aloud. (Chrome works best.)", true);
+  if(!("speechSynthesis" in window)) setNote("Your browser can't do voice output — "+interviewerDisplayName()+" will still type. Chrome works best.", true);
+  else if(!sttOK) setNote("Voice input isn't supported here — you can type responses. "+interviewerDisplayName()+" speaks aloud. (Chrome works best.)", true);
 });
 </script>
