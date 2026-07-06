@@ -180,9 +180,6 @@
   .vpanel input#openaiKey{flex:1;min-width:0;font-family:var(--mono)}
   .vpanel select#openaiVoice,.vpanel select#openaiModel{flex:0 0 130px;width:130px}
   #testVoice{width:fit-content}
-  .speed-row input[type=range]{flex:1;accent-color:var(--amber);cursor:pointer}
-  #speedLabel{font-family:var(--mono);font-size:12px;color:var(--text);width:40px;
-    text-align:right;font-variant-numeric:tabular-nums}
 
   @media(max-width:860px){
     .stage{flex-direction:column}
@@ -248,8 +245,13 @@
                 <button data-mode="neural">Neural · OpenAI</button>
               </div>
               <div class="vrow speed-row">
-                <input type="range" id="speedRange" min="0.5" max="2" step="0.1" value="1" title="Sam's speech speed">
-                <span id="speedLabel">1.0x</span>
+                <select id="speedSelect" title="Speech speed">
+                  <option value="0.5">0.5x</option>
+                  <option value="1" selected>1x</option>
+                  <option value="1.5">1.5x</option>
+                  <option value="2">2x</option>
+                  <option value="2.5">2.5x</option>
+                </select>
               </div>
               <div class="vrow" id="browserRow">
                 <select id="voiceSel" title="Choose a browser voice"></select>
@@ -772,9 +774,8 @@ document.getElementById("ttsSeg").addEventListener("click", e=>{
   document.getElementById("browserRow").style.display = ttsMode==="browser"?"flex":"none";
   document.getElementById("neuralRow").style.display  = ttsMode==="neural" ?"flex":"none";
 });
-document.getElementById("speedRange").addEventListener("input", e=>{
+document.getElementById("speedSelect").addEventListener("change", e=>{
   speechRate = parseFloat(e.target.value);
-  document.getElementById("speedLabel").textContent = speechRate.toFixed(1)+"x";
 });
 document.getElementById("testVoice").onclick = ()=>{
   const prev=muted; muted=false;
