@@ -191,6 +191,9 @@
   .vpanel select{flex:1;min-width:0}
   .vpanel select#openaiVoice,.vpanel select#openaiModel{flex:0 0 130px;width:130px}
   #testVoice{width:fit-content}
+  #inputSection select{background:#14161d;border:1px solid var(--line);border-radius:8px;
+    padding:8px 10px;color:var(--text);font-size:12.5px;font-family:var(--ui);flex:1;min-width:0}
+  #inputSection select:focus{outline:none;border-color:var(--amber)}
   #interviewerSection input,#interviewerSection select{background:#14161d;border:1px solid var(--line);
     border-radius:8px;padding:8px 10px;color:var(--text);font-size:12.5px;font-family:var(--ui)}
   #interviewerSection input{flex:1;min-width:0}
@@ -268,6 +271,16 @@
                 <option value="they" selected>They / Them</option>
                 <option value="she">She / Her</option>
                 <option value="he">He / Him</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-section" id="inputSection">
+            <div class="modal-label">Your voice (input)</div>
+            <div class="vrow">
+              <select id="sttModel" title="Transcription model">
+                <option value="gpt-4o-transcribe" selected>gpt-4o-transcribe</option>
+                <option value="gpt-4o-mini-transcribe">gpt-4o-mini-transcribe</option>
+                <option value="whisper-1">whisper-1</option>
               </select>
             </div>
           </div>
@@ -612,66 +625,103 @@ async function speakNeural(text){
   }
 }
 
-/* ============================ voice in (STT) ============================ */
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recog = null, listening = false, sttOK = !!SR, heard = "";
-const PAUSE_MS = 1200;
-let handsFree = false, silenceTimer = null, micGranted = false;
-function clearSilenceTimer(){ if(silenceTimer){ clearTimeout(silenceTimer); silenceTimer=null; } }
-if(SR){
-  recog = new SR(); recog.lang="en-US"; recog.interimResults=true; recog.continuous=true;
-  recog.onresult = e=>{
-    let interim="";
-    for(let i=e.resultIndex;i<e.results.length;i++){
-      const r=e.results[i];
-      if(r.isFinal) heard += r[0].transcript+" "; else interim += r[0].transcript;
-    }
-    textInput.value = (heard+interim).trim();
-    if(handsFree && listening){
-      clearSilenceTimer();
-      silenceTimer = setTimeout(()=>{
-        if(textInput.value.trim()) sendSpoken();
-      }, PAUSE_MS);
-    }
-  };
-  recog.onerror = ev=>{
-    if(ev.error==="not-allowed"||ev.error==="service-not-allowed"){
-      sttOK=false; micBtn.disabled=true; handsFree=false; clearSilenceTimer(); stopListening();
-      showBanner("<b>Mic blocked.</b> This preview frame won't allow the microphone. Download this file and open it in Chrome to talk out loud — for now, type your responses below.", "err");
-    }
-  };
-  recog.onend = ()=>{ if(listening){ try{recog.start();}catch(_){}}};
+/* ============================ voice in (transcription) ============================ */
+// Record the mic with MediaRecorder, detect end-of-speech with a Web Audio VAD, then
+// transcribe the clip via OpenAI /v1/audio/transcriptions. Replaces the browser's
+// Web Speech recognizer (Chrome-only). The mic stream is acquired once and reused.
+const PAUSE_MS = 1200, VAD_INTERVAL = 100, SPEECH_RMS = 0.02, SILENCE_RMS = 0.012;
+let listening = false, handsFree = false;
+let micStream = null, mediaRec = null, recChunks = [], audioCtx = null, analyser = null;
+let vadTimer = null, heardSpeech = false, silenceMs = 0;
+let sttOK = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+
+async function ensureMic(){
+  if(micStream) return true;
+  try{
+    micStream = await navigator.mediaDevices.getUserMedia({audio:true});
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const src = audioCtx.createMediaStreamSource(micStream);
+    analyser = audioCtx.createAnalyser(); analyser.fftSize = 2048;
+    src.connect(analyser);
+    return true;
+  }catch(err){
+    sttOK=false; micBtn.disabled=true; micBtn.classList.remove("rec");
+    showBanner("<b>Mic blocked ("+((err&&err.name)||"denied")+").</b> Allow the microphone (serve over http://localhost), or type your responses below.", "err");
+    return false;
+  }
+}
+function micRms(){
+  const buf = new Float32Array(analyser.fftSize);
+  analyser.getFloatTimeDomainData(buf);
+  let s=0; for(let i=0;i<buf.length;i++) s+=buf[i]*buf[i];
+  return Math.sqrt(s/buf.length);
+}
+function pickMime(){
+  const c=["audio/webm;codecs=opus","audio/webm","audio/mp4"];
+  for(const t of c){ if(window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) return t; }
+  return "";
 }
 async function startListening(){
-  if(!SR){ setNote("Voice input isn't supported in this browser — try Chrome, or type your response.", true); return; }
   if(listening) return;
-  // Probe the mic ONCE to surface a clear error if it's blocked. Repeating this on
-  // every turn re-prompts on file:// origins (which don't persist permission), which
-  // is jarring in hands-free mode — so after the first grant we skip it and let
-  // recognition reuse the permission. Serve over http://localhost for a single prompt.
-  if(!micGranted){
-    try{
-      if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
-        const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-        stream.getTracks().forEach(t=>t.stop()); // permission is all we needed
-      }
-      micGranted = true;
-    }catch(err){
-      sttOK=false; micBtn.disabled=true; micBtn.classList.remove("rec");
-      showBanner("<b>Mic blocked ("+((err&&err.name)||"denied")+").</b> This preview frame won't allow the microphone. Download this file and open it in Chrome to talk out loud — for now, type your responses below.", "err");
-      return;
-    }
-  }
+  if(!sttOK){ setNote("Voice input isn't available here — type your response.", true); return; }
+  if(!(await ensureMic())) return;
+  if(audioCtx.state==="suspended"){ try{ await audioCtx.resume(); }catch(_){} }
   stopAllSpeech();
-  heard=""; textInput.value=""; clearSilenceTimer();
-  try{ recog.start(); }catch(_){}
+  recChunks=[]; heardSpeech=false; silenceMs=0; textInput.value="";
+  const mime = pickMime();
+  try{ mediaRec = mime ? new MediaRecorder(micStream,{mimeType:mime}) : new MediaRecorder(micStream); }
+  catch(_){ mediaRec = new MediaRecorder(micStream); }
+  mediaRec.ondataavailable = e=>{ if(e.data && e.data.size) recChunks.push(e.data); };
+  mediaRec.onstop = onRecStop;
+  mediaRec.start();
   listening=true; micBtn.classList.add("rec");
   if(!speaking()) setPresence("listening","listening…");
+  vadTimer = setInterval(()=>{
+    if(!listening) return;
+    const v = micRms();
+    if(v > SPEECH_RMS) heardSpeech = true;
+    if(heardSpeech){
+      if(v < SILENCE_RMS){ silenceMs += VAD_INTERVAL; if(silenceMs >= PAUSE_MS) stopListening(); }
+      else silenceMs = 0;
+    }
+  }, VAD_INTERVAL);
 }
 function stopListening(){
-  listening=false; micBtn.classList.remove("rec"); clearSilenceTimer();
-  if(recog){ try{recog.stop();}catch(_){}}
+  if(!listening) return;
+  listening=false; micBtn.classList.remove("rec");
+  if(vadTimer){ clearInterval(vadTimer); vadTimer=null; }
+  try{ if(mediaRec && mediaRec.state!=="inactive") mediaRec.stop(); }catch(_){}  // triggers onRecStop
   if(!speaking()) setPresence("idle", interviewLive?"idle":"idle");
+}
+function rearmListen(){ setTimeout(()=>{ if(interviewLive && handsFree && !listening) startListening(); }, 300); }
+async function onRecStop(){
+  const blob = new Blob(recChunks, {type:(mediaRec && mediaRec.mimeType) || "audio/webm"});
+  recChunks=[];
+  if(!heardSpeech || blob.size < 1500){ if(interviewLive && handsFree) rearmListen(); return; }
+  setPresence("thinking","transcribing…");
+  try{
+    const text = await transcribe(blob);
+    if(text && text.trim()){ textInput.value = text.trim(); sendSpoken(); }
+    else if(interviewLive && handsFree){ rearmListen(); }
+  }catch(e){
+    setNote("Transcription failed ("+(e.message||e)+"). You can type instead.", true);
+    if(interviewLive && handsFree) rearmListen();
+  }
+}
+async function transcribe(blob){
+  const key = (document.getElementById("apiKey").value||"").trim();
+  if(!key) throw new Error("no OpenAI key");
+  const model = (document.getElementById("sttModel").value||"gpt-4o-transcribe");
+  const fd = new FormData();
+  fd.append("file", blob, "audio.webm");
+  fd.append("model", model);
+  fd.append("response_format","json");
+  const res = await fetch("https://api.openai.com/v1/audio/transcriptions",{
+    method:"POST", headers:{ "Authorization":"Bearer "+key }, body:fd
+  });
+  if(!res.ok){ let m="HTTP "+res.status; try{ const j=await res.json(); m=(j.error&&j.error.message)||m; }catch(_){} throw new Error(m); }
+  const data = await res.json();
+  return data.text || "";
 }
 
 /* ============================ editor ============================ */
@@ -746,7 +796,7 @@ function sendSpoken(){
   if(!spoken){ return; }
   if(listening) stopListening();
   addMsg("you", spoken);
-  textInput.value=""; heard="";
+  textInput.value="";
   ask(buildTurn(spoken));
 }
 
@@ -786,7 +836,7 @@ muteBtn.onclick = ()=>{
 micBtn.onclick = ()=>{
   if(listening){
     handsFree = false;
-    stopListening(); sendSpoken();
+    stopListening();   // stop → onRecStop transcribes and sends
   }else{
     handsFree = true;
     startListening();
