@@ -520,6 +520,24 @@ function fillVoiceSelect(vs){
   if(idx>=0) sel.value = String(idx);
   sel.onchange = ()=>{ preferredVoice = speechSynthesis.getVoices()[parseInt(sel.value,10)] || preferredVoice; };
 }
+// The interviewer's sex/pronoun picks a default voice for both TTS engines. Users can
+// still override the voice manually afterward; changing the pronoun re-applies a default.
+const OPENAI_VOICE_BY_PRONOUN = { he:"onyx", she:"nova", they:"alloy" };
+function applyPronounVoice(){
+  const ov = document.getElementById("openaiVoice");
+  if(ov){ const v = OPENAI_VOICE_BY_PRONOUN[interviewerPronoun]; if(v) ov.value = v; }
+  if("speechSynthesis" in window){
+    const vs = speechSynthesis.getVoices();
+    if(vs.length){
+      const male=/\b(david|daniel|alex|fred|tom|george|james|aaron|oliver|rishi|male)\b/i;
+      const female=/\b(samantha|victoria|karen|susan|zira|fiona|moira|tessa|nova|ava|allison|serena|kate|amelie|female)\b/i;
+      let m=null;
+      if(interviewerPronoun==="he") m = vs.find(v=>/en/i.test(v.lang)&&male.test(v.name));
+      else if(interviewerPronoun==="she") m = vs.find(v=>/en/i.test(v.lang)&&female.test(v.name));
+      if(m){ preferredVoice=m; const vsel=document.getElementById("voiceSel"); if(vsel){ const idx=vs.indexOf(m); if(idx>=0) vsel.value=String(idx); } }
+    }
+  }
+}
 if("speechSynthesis" in window){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
 
 function stripForSpeech(t){
@@ -789,6 +807,7 @@ document.getElementById("interviewerName").addEventListener("input", e=>{
 });
 document.getElementById("interviewerPronoun").addEventListener("change", e=>{
   interviewerPronoun = e.target.value;
+  applyPronounVoice();
 });
 document.getElementById("testVoice").onclick = ()=>{
   const prev=muted; muted=false;
