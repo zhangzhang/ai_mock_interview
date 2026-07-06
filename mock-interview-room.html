@@ -1,8 +1,8 @@
 <!--
   Onsite — a voice-driven mock coding-interview room.
   Left: the problem sheet. Right: a Java editor + your interviewer, "Sam".
-  Sam (powered by Claude) speaks to you, listens to you reason out loud,
-  and sees the code in your editor. Works best in desktop Chrome.
+  Sam (powered by OpenAI) speaks to you, listens to you reason out loud,
+  and sees the code in your editor. Works best served over http://localhost.
 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -175,8 +175,11 @@
   .keyrow input{background:#14161d;border:1px solid var(--line);border-radius:9px;
     padding:9px 11px;color:var(--text);font-size:12.5px;font-family:var(--mono)}
   .keyrow input#apiKey{flex:1;min-width:0}
-  .keyrow input#apiModel{width:172px;flex:0 0 172px}
   .keyrow input:focus{outline:none;border-color:var(--amber)}
+  .keyrow select{background:#14161d;border:1px solid var(--line);border-radius:9px;
+    padding:9px 10px;color:var(--text);font-size:12.5px;font-family:var(--ui);flex:0 0 128px;width:128px}
+  .keyrow select:focus{outline:none;border-color:var(--amber)}
+  .key-note{font-size:11px;color:var(--muted);line-height:1.4;margin-top:-2px}
   .vpanel{display:flex;flex-direction:column;gap:9px}
   .seg{display:inline-flex;background:#14161d;border:1px solid var(--line);border-radius:8px;
     overflow:hidden;width:fit-content}
@@ -248,9 +251,15 @@
           <div class="modal-section" id="connectionSection">
             <div class="modal-label">Connection</div>
             <div class="keyrow" id="keyrow">
-              <input id="apiKey" type="password" autocomplete="off" placeholder="Anthropic API key (sk-ant-…) — stays in this tab, sent only to Anthropic">
-              <input id="apiModel" type="text" spellcheck="false" value="claude-sonnet-5" title="Model to use with your key">
+              <input id="apiKey" type="password" autocomplete="off" placeholder="OpenAI API key (sk-…)">
+              <select id="botModel" title="Interviewer model">
+                <option value="gpt-5.5" selected>gpt-5.5</option>
+                <option value="gpt-5">gpt-5</option>
+                <option value="gpt-5-mini">gpt-5-mini</option>
+                <option value="gpt-5-nano">gpt-5-nano</option>
+              </select>
             </div>
+            <div class="key-note">Your key stays in this browser tab only — never saved, and sent only to OpenAI.</div>
           </div>
           <div class="modal-section" id="interviewerSection">
             <div class="modal-label">Interviewer</div>
@@ -465,30 +474,22 @@ async function ask(userContent){
   setPresence("thinking","thinking…");
   const key = (document.getElementById("apiKey").value||"").trim();
   try{
-    let res;
-    if(key){
-      // Standalone / local: authenticate directly with the user's own key.
-      const model = (document.getElementById("apiModel").value||"").trim() || "claude-sonnet-5";
-      res = await fetch("https://api.anthropic.com/v1/messages",{
-        method:"POST",
-        headers:{
-          "content-type":"application/json",
-          "x-api-key":key,
-          "anthropic-version":"2023-06-01",
-          "anthropic-dangerous-direct-browser-access":"true"
-        },
-        body:JSON.stringify({model, max_tokens:1000, system:systemPrompt(), messages:conversation})
-      });
-    }else{
-      // Inside Claude.ai: the request is proxied and authenticated for us.
-      res = await fetch("https://api.anthropic.com/v1/messages",{
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({model:"claude-sonnet-4-6", max_tokens:1000, system:systemPrompt(), messages:conversation})
-      });
-    }
+    // GPT-5 models are reasoning models: use max_completion_tokens (not max_tokens),
+    // no temperature, and a low reasoning effort to keep spoken turns fast and short.
+    const model = (document.getElementById("botModel").value||"").trim() || "gpt-5.5";
+    const res = await fetch("https://api.openai.com/v1/chat/completions",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+key },
+      body:JSON.stringify({
+        model,
+        messages:[{role:"system", content:systemPrompt()}, ...conversation],
+        max_completion_tokens:2000,
+        reasoning_effort:"low"
+      })
+    });
     const data = await res.json();
     if(data && data.error){ throw new Error(data.error.message || JSON.stringify(data.error)); }
-    const text = (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n").trim()
+    const text = ((data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || "").trim()
       || "Sorry — could you say that again?";
     conversation.push({role:"assistant", content:text});
     addMsg("sam", text);
@@ -497,7 +498,7 @@ async function ask(userContent){
     conversation.pop(); // drop the failed turn so history stays valid for a retry
     const msg = (e && e.message) ? e.message : String(e);
     addMsg("system","(Couldn't reach your interviewer: "+msg+")");
-    if(!key) showBanner("<b>"+interviewerDisplayName()+" needs an Anthropic API key when this runs outside Claude.ai.</b> Open Settings (the ⚙ icon) and paste your Anthropic key — that's the key for Claude, separate from the OpenAI voice key. Get one at console.anthropic.com, then try again.","err");
+    if(!key) showBanner("<b>"+interviewerDisplayName()+" needs an OpenAI API key.</b> Open Settings (the ⚙ icon) and paste your OpenAI key (sk-…). Get one at platform.openai.com — it stays in this tab. Then try again.","err");
     setPresence("idle","idle");
   }
 }
@@ -870,11 +871,10 @@ window.addEventListener("load", ()=>{
   addMsg("system","Choose a problem, then press Start interview. "+interviewerDisplayName()+" will greet you — talk it through out loud, like a real onsite.");
   const embedded = (window.self !== window.top);
   if(embedded){
-    document.getElementById("connectionSection").style.display="none";
-    if(SR) showBanner("<b>You're viewing this inside a preview frame, which blocks the microphone.</b> To talk out loud, download this file (the ⤓ icon) and open it in Chrome. You can type here for now — "+interviewerDisplayName()+" still speaks and sees your code.");
+    if(sttOK) showBanner("<b>You're viewing this inside a preview frame, which blocks the microphone.</b> To talk out loud, download this file (the ⤓ icon) and open it in Chrome. You can type here for now — "+interviewerDisplayName()+" still speaks and sees your code.");
   }else{
     openSettings();
-    showBanner("<b>Running locally — paste your Anthropic API key in Settings to wake "+interviewerDisplayName()+".</b> Get one at console.anthropic.com. It stays in this browser tab and is sent only to Anthropic; a full mock costs a few cents. The mic works here too — push it and allow access.");
+    showBanner("<b>Paste your OpenAI API key in Settings to wake "+interviewerDisplayName()+".</b> Get one at platform.openai.com. It stays in this browser tab and is sent only to OpenAI. Serve over http://localhost so the mic works smoothly.");
   }
   if(!("speechSynthesis" in window)) setNote("Your browser can't do voice output — "+interviewerDisplayName()+" will still type. Chrome works best.", true);
   else if(!sttOK) setNote("Voice input isn't supported here — you can type responses. "+interviewerDisplayName()+" speaks aloud. (Chrome works best.)", true);
