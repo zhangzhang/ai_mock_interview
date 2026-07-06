@@ -150,17 +150,22 @@
   .banner{margin:6px 18px 8px;padding:10px 13px;border-radius:9px;font-size:12.5px;line-height:1.48;
     background:var(--amber-soft);border:1px solid rgba(242,166,59,.35);color:var(--amber-2)}
   .banner.err{background:rgba(229,115,94,.12);border-color:rgba(229,115,94,.42);color:#f0a091}
-  .chip-row{margin:6px 18px 8px;display:flex;align-items:center;gap:10px;padding:8px 12px 8px 13px;
-    border:1px solid var(--line);border-left:2px solid var(--amber);border-radius:9px;
-    background:var(--panel-2);font-size:12px}
-  .chip-row #chipText{flex:1;color:var(--muted);letter-spacing:.02em;font-variant-numeric:tabular-nums}
-  .drawer{margin:2px 18px 8px;padding:14px 15px;border:1px solid var(--line);border-radius:10px;
-    background:var(--panel-2);display:flex;flex-direction:column;gap:0}
-  .drawer-section{display:flex;flex-direction:column;gap:10px}
-  .drawer-section:not(:last-child){padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line)}
-  .drawer-label{display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:700;
+  .settings-modal{width:min(560px,92vw);max-height:88vh;overflow:auto;padding:0;border:none;
+    border-radius:14px;background:var(--panel);color:var(--text);
+    box-shadow:0 24px 70px rgba(0,0,0,.55)}
+  .settings-modal::backdrop{background:rgba(9,10,14,.62);backdrop-filter:blur(2px)}
+  .modal-head{display:flex;align-items:center;gap:10px;padding:15px 18px;
+    border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel)}
+  .modal-head b{font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--text)}
+  .modal-head .x{margin-left:auto;width:30px;height:30px;border-radius:8px;border:1px solid var(--line);
+    background:var(--panel-2);color:var(--muted);font-size:16px;line-height:1;display:grid;place-items:center}
+  .modal-head .x:hover{color:var(--text);border-color:#3a3f4d}
+  .modal-body{padding:16px 18px 20px;display:flex;flex-direction:column;gap:0}
+  .modal-section{display:flex;flex-direction:column;gap:10px}
+  .modal-section:not(:last-child){padding-bottom:15px;margin-bottom:15px;border-bottom:1px solid var(--line)}
+  .modal-label{display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:700;
     letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-  .drawer-label::before{content:"";width:5px;height:5px;border-radius:50%;
+  .modal-label::before{content:"";width:5px;height:5px;border-radius:50%;
     background:var(--amber);box-shadow:0 0 6px var(--amber-soft)}
   .keyrow{display:flex;gap:8px}
   .keyrow input{background:#14161d;border:1px solid var(--line);border-radius:9px;
@@ -197,7 +202,7 @@
     </div>
     <div class="spacer"></div>
     <select id="problemSelect" title="Choose a problem"></select>
-    <button class="icon-btn" id="voiceBtn" title="Settings">🎙</button>
+    <button class="icon-btn" id="voiceBtn" title="Settings">⚙</button>
     <button class="icon-btn on" id="muteBtn" title="Sam's voice on/off">🔊</button>
     <button class="start-btn" id="startBtn">Start interview</button>
   </header>
@@ -225,20 +230,21 @@
           <div class="status" id="status">idle</div>
         </div>
         <div class="banner" id="banner" style="display:none"></div>
-        <div class="chip-row" id="chipRow" style="display:none">
-          <span id="chipText"></span>
-          <button class="pill" id="editSettings">Edit</button>
-        </div>
-        <div class="drawer" id="settingsDrawer" style="display:none">
-          <div class="drawer-section" id="connectionSection">
-            <div class="drawer-label">Connection</div>
+        <dialog class="settings-modal" id="settingsModal">
+          <div class="modal-head">
+            <b>Settings</b>
+            <button class="x" id="closeSettings" title="Close" aria-label="Close settings">✕</button>
+          </div>
+          <div class="modal-body">
+          <div class="modal-section" id="connectionSection">
+            <div class="modal-label">Connection</div>
             <div class="keyrow" id="keyrow">
               <input id="apiKey" type="password" autocomplete="off" placeholder="Anthropic API key (sk-ant-…) — stays in this tab, sent only to Anthropic">
               <input id="apiModel" type="text" spellcheck="false" value="claude-sonnet-5" title="Model to use with your key">
             </div>
           </div>
-          <div class="drawer-section" id="voiceSection">
-            <div class="drawer-label">Voice</div>
+          <div class="modal-section" id="voiceSection">
+            <div class="modal-label">Voice</div>
             <div class="vpanel" id="vpanel">
               <div class="seg" id="ttsSeg">
                 <button data-mode="browser" class="on">Browser voice</button>
@@ -274,7 +280,8 @@
               <button class="pill" id="testVoice">Test voice</button>
             </div>
           </div>
-        </div>
+          </div>
+        </dialog>
         <div class="transcript" id="transcript"></div>
         <div class="talkbar">
           <button class="mic" id="micBtn" title="Push to talk" disabled>🎤</button>
@@ -726,47 +733,15 @@ micBtn.onclick = ()=>{
   }
 };
 
-let drawerAutoFoldArmed = true;
-function updateChip(){
-  const parts=[];
-  const key=(document.getElementById("apiKey").value||"").trim();
-  if(key) parts.push("✓ Claude connected");
-  parts.push(ttsMode==="neural"?"Neural voice":"Browser voice");
-  parts.push(speechRate.toFixed(1)+"x");
-  document.getElementById("chipText").textContent = parts.join(" · ");
-}
-function openDrawer(){
-  document.getElementById("settingsDrawer").style.display="flex";
-  document.getElementById("chipRow").style.display="none";
-  voiceBtn.classList.add("on");
-}
-function closeDrawerToChip(){
-  updateChip();
-  document.getElementById("settingsDrawer").style.display="none";
-  document.getElementById("chipRow").style.display="flex";
-  voiceBtn.classList.remove("on");
-}
-function foldOnce(){
-  if(!drawerAutoFoldArmed) return;
-  drawerAutoFoldArmed = false;
-  closeDrawerToChip();
-}
-function armVoiceAutoFold(){
-  document.getElementById("ttsSeg").addEventListener("click", foldOnce);
-  document.getElementById("speedRange").addEventListener("input", foldOnce);
-  document.getElementById("voiceSel").addEventListener("change", foldOnce);
-  document.getElementById("openaiVoice").addEventListener("change", foldOnce);
-  document.getElementById("openaiModel").addEventListener("change", foldOnce);
-  document.getElementById("testVoice").addEventListener("click", foldOnce);
-}
-voiceBtn.onclick = ()=>{
-  const open = document.getElementById("settingsDrawer").style.display==="none";
-  if(open) openDrawer(); else closeDrawerToChip();
-};
-document.getElementById("editSettings").onclick = openDrawer;
-document.getElementById("apiKey").addEventListener("input", ()=>{
-  if((document.getElementById("apiKey").value||"").trim()) foldOnce();
-});
+const settingsModal = document.getElementById("settingsModal");
+function openSettings(){ if(!settingsModal.open) settingsModal.showModal(); voiceBtn.classList.add("on"); }
+function closeSettings(){ if(settingsModal.open) settingsModal.close(); }
+voiceBtn.onclick = ()=>{ settingsModal.open ? closeSettings() : openSettings(); };
+document.getElementById("closeSettings").onclick = closeSettings;
+// Backdrop click (target is the dialog element itself, not a child) closes it.
+settingsModal.addEventListener("click", e=>{ if(e.target===settingsModal) closeSettings(); });
+// Native close (✕, backdrop, or Escape) is the single place the icon un-highlights.
+settingsModal.addEventListener("close", ()=>{ voiceBtn.classList.remove("on"); });
 document.getElementById("ttsSeg").addEventListener("click", e=>{
   const b=e.target.closest("button[data-mode]"); if(!b) return;
   ttsMode=b.dataset.mode;
@@ -797,15 +772,14 @@ problemSelect.onchange = ()=>{
 window.addEventListener("load", ()=>{
   renderSelect(); renderProblem(); initEditor();
   if("speechSynthesis" in window) loadVoices();
-  document.getElementById("settingsDrawer").style.display="flex"; voiceBtn.classList.add("on");
   addMsg("system","Choose a problem, then press Start interview. Sam will greet you — talk it through out loud, like a real onsite.");
   const embedded = (window.self !== window.top);
   if(embedded){
     document.getElementById("connectionSection").style.display="none";
-    armVoiceAutoFold();
     if(SR) showBanner("<b>You're viewing this inside a preview frame, which blocks the microphone.</b> To talk out loud, download this file (the ⤓ icon) and open it in Chrome. You can type here for now — Sam still speaks and sees your code.");
   }else{
-    showBanner("<b>Running locally — paste your Anthropic API key above to wake Sam.</b> Get one at console.anthropic.com. It stays in this browser tab and is sent only to Anthropic; a full mock costs a few cents. The mic works here too — push it and allow access.");
+    openSettings();
+    showBanner("<b>Running locally — paste your Anthropic API key in Settings to wake Sam.</b> Get one at console.anthropic.com. It stays in this browser tab and is sent only to Anthropic; a full mock costs a few cents. The mic works here too — push it and allow access.");
   }
   if(!("speechSynthesis" in window)) setNote("Your browser can't do voice output — Sam will still type. Chrome works best.", true);
   else if(!sttOK) setNote("Voice input isn't supported here — you can type responses. Sam speaks aloud. (Chrome works best.)", true);
