@@ -493,6 +493,7 @@ async function ask(userContent){
     const res = await fetch("https://api.openai.com/v1/chat/completions",{
       method:"POST",
       headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+key },
+      signal: currentSignal(),
       body:JSON.stringify({
         model,
         messages:[{role:"system", content:systemPrompt()}, ...conversation],
@@ -502,6 +503,7 @@ async function ask(userContent){
     });
     const data = await res.json();
     if(data && data.error){ throw new Error(data.error.message || JSON.stringify(data.error)); }
+    if(!interviewLive) return;   // interview ended mid-request — drop the stale reply
     const text = ((data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || "").trim()
       || "Sorry — could you say that again?";
     conversation.push({role:"assistant", content:text});
@@ -509,6 +511,7 @@ async function ask(userContent){
     speak(text);
   }catch(e){
     conversation.pop(); // drop the failed turn so history stays valid for a retry
+    if(isAbort(e) || !interviewLive){ setPresence("idle","idle"); return; }  // ended on purpose
     const msg = (e && e.message) ? e.message : String(e);
     addMsg("system","(Couldn't reach your interviewer: "+msg+")");
     if(!key) showBanner("<b>"+interviewerDisplayName()+" needs an OpenAI API key.</b> Open Settings (the ⚙ icon) and paste your OpenAI key (sk-…). Get one at platform.openai.com — it stays in this tab. Then try again.","err");
@@ -522,6 +525,10 @@ let ttsMode = "browser";       // 'browser' | 'neural'
 let ttsPlaying = false;        // true while neural audio is playing
 let neuralAudio = null;
 let speechRate = 1.0;          // 0.5 - 2.0, controls both browser and neural TTS pace
+let ttsToken = 0;              // bumped by stopAllSpeech; stale in-flight TTS won't play
+let sessionAbort = null;       // aborts in-flight chat/transcription when the interview ends
+function currentSignal(){ return sessionAbort ? sessionAbort.signal : undefined; }
+function isAbort(e){ return e && (e.name==="AbortError" || e.name==="TypeError" && /abort/i.test(e.message||"")); }
 function loadVoices(){
   const vs = speechSynthesis.getVoices();
   if(!preferredVoice){
@@ -563,7 +570,7 @@ function stripForSpeech(t){
 }
 function speaking(){ return ("speechSynthesis" in window && speechSynthesis.speaking) || ttsPlaying; }
 function stopNeural(){ if(neuralAudio){ try{neuralAudio.pause();}catch(_){}} ttsPlaying=false; }
-function stopAllSpeech(){ if("speechSynthesis" in window) speechSynthesis.cancel(); stopNeural(); }
+function stopAllSpeech(){ ttsToken++; if("speechSynthesis" in window) speechSynthesis.cancel(); stopNeural(); }
 function onSpeechEnd(){
   if(!listening) setPresence("idle", interviewLive?"listening for you":"idle");
   if(interviewLive && handsFree && !listening){
@@ -592,6 +599,7 @@ async function speakNeural(text){
   const voice = document.getElementById("openaiVoice").value;
   const model = document.getElementById("openaiModel").value;
   stopAllSpeech();
+  const myToken = ttsToken;   // if a later stopAllSpeech bumps this, we've been superseded
   setPresence("speaking","speaking…");
   try{
     // Send speed for every model. tts-1/tts-1-hd honor it directly; gpt-4o-mini-tts
@@ -613,12 +621,15 @@ async function speakNeural(text){
       try{ const j = await res.json(); m = (j.error&&j.error.message)||m; }catch(_){}
       throw new Error(m);
     }
-    const url = URL.createObjectURL(new Blob([await res.arrayBuffer()],{type:"audio/mpeg"}));
+    const buf = await res.arrayBuffer();
+    if(myToken !== ttsToken) return;   // superseded (new turn or interview ended) — don't play
+    const url = URL.createObjectURL(new Blob([buf],{type:"audio/mpeg"}));
     neuralAudio = new Audio(url); ttsPlaying = true;
     neuralAudio.onended = ()=>{ ttsPlaying=false; URL.revokeObjectURL(url); onSpeechEnd(); };
     neuralAudio.onerror = ()=>{ ttsPlaying=false; };
     await neuralAudio.play();
   }catch(e){
+    if(myToken !== ttsToken || isAbort(e)) return;   // stopped on purpose — stay silent
     ttsPlaying=false;
     setNote("Neural voice failed ("+(e.message||e)+") — falling back to the browser voice. A CORS error usually means: serve the file over http://localhost.", true);
     speakBrowser(text);
@@ -697,15 +708,18 @@ function rearmListen(){ setTimeout(()=>{ if(interviewLive && handsFree && !liste
 async function onRecStop(){
   const blob = new Blob(recChunks, {type:(mediaRec && mediaRec.mimeType) || "audio/webm"});
   recChunks=[];
-  if(!heardSpeech || blob.size < 1500){ if(interviewLive && handsFree) rearmListen(); return; }
+  if(!interviewLive) return;   // interview ended while recording — drop this clip
+  if(!heardSpeech || blob.size < 1500){ if(handsFree) rearmListen(); return; }
   setPresence("thinking","transcribing…");
   try{
     const text = await transcribe(blob);
+    if(!interviewLive) return;   // ended during transcription — don't send a new turn
     if(text && text.trim()){ textInput.value = text.trim(); sendSpoken(); }
-    else if(interviewLive && handsFree){ rearmListen(); }
+    else if(handsFree){ rearmListen(); }
   }catch(e){
+    if(isAbort(e) || !interviewLive) return;   // stopped on purpose
     setNote("Transcription failed ("+(e.message||e)+"). You can type instead.", true);
-    if(interviewLive && handsFree) rearmListen();
+    if(handsFree) rearmListen();
   }
 }
 async function transcribe(blob){
@@ -717,7 +731,7 @@ async function transcribe(blob){
   fd.append("model", model);
   fd.append("response_format","json");
   const res = await fetch("https://api.openai.com/v1/audio/transcriptions",{
-    method:"POST", headers:{ "Authorization":"Bearer "+key }, body:fd
+    method:"POST", headers:{ "Authorization":"Bearer "+key }, body:fd, signal: currentSignal()
   });
   if(!res.ok){ let m="HTTP "+res.status; try{ const j=await res.json(); m=(j.error&&j.error.message)||m; }catch(_){} throw new Error(m); }
   const data = await res.json();
@@ -803,6 +817,7 @@ function sendSpoken(){
 /* ============================ wiring ============================ */
 function startInterview(){
   interviewLive = true; conversation = [];
+  sessionAbort = ("AbortController" in window) ? new AbortController() : null;
   transcript.innerHTML="";
   setCode(currentProblem.starter);
   [textInput,sendBtn,shareBtn,hintBtn,feedbackBtn].forEach(el=>el.disabled=false);
@@ -818,8 +833,10 @@ function startInterview(){
   ask("Let's begin the interview. Please greet me and present the problem.");
 }
 function endInterview(){
-  interviewLive=false; handsFree=false; stopListening();
-  stopAllSpeech();
+  interviewLive=false; handsFree=false;
+  if(sessionAbort){ try{ sessionAbort.abort(); }catch(_){} }   // cancel in-flight chat/transcription
+  stopListening();
+  stopAllSpeech();   // bumps ttsToken so any in-flight TTS won't start playing
   [textInput,sendBtn,shareBtn,hintBtn,feedbackBtn,micBtn].forEach(el=>el.disabled=true);
   startBtn.textContent="Start interview"; startBtn.classList.remove("live");
   problemSelect.disabled=false; setPresence("idle","idle");
