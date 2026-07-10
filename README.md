@@ -8,6 +8,8 @@ code in your editor — like a real onsite.
 No backend, no build step, no accounts. Everything runs in your browser with your
 own OpenAI API key, which never leaves the page.
 
+**▶ Try it live: https://zhangzhang.github.io/ai_mock_interview/**
+
 ## Features
 
 - **Talk it through out loud.** Push the mic, think aloud, and Sam responds by voice.
@@ -29,18 +31,26 @@ own OpenAI API key, which never leaves the page.
 
 ## Getting started
 
-You need an OpenAI API key (create one at
-[platform.openai.com](https://platform.openai.com/api-keys)).
+The app is hosted on GitHub Pages — no install needed:
 
-**Serve it over `http://localhost`** — don't just double-click the file. Opening from
-a `file://` URL blocks the microphone and re-prompts for permission every turn, and
-some OpenAI requests are blocked by CORS. Any static server works:
+**→ https://zhangzhang.github.io/ai_mock_interview/**
+
+Open it in Chrome, add your OpenAI API key in Settings, and you're ready. You need an
+OpenAI API key (create one at
+[platform.openai.com](https://platform.openai.com/api-keys)). The hosted page is
+served over HTTPS, so the microphone works and its permission is remembered.
+
+### Running it locally (for development)
+
+It's a single static file, so any static server works. **Serve it over `http://localhost`** —
+don't just double-click the file, because opening from a `file://` URL blocks the
+microphone (and re-prompts every turn) and some OpenAI requests are blocked by CORS.
 
 ```bash
 git clone git@github.com:zhangzhang/ai_mock_interview.git
 cd ai_mock_interview
 python3 -m http.server 8731
-# then open http://localhost:8731/mock-interview-room.html in Chrome
+# then open http://localhost:8731/ in Chrome
 ```
 
 Chrome is recommended.
