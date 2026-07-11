@@ -77,6 +77,9 @@
   .problem .body pre{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
     padding:12px 14px;font-family:var(--mono);font-size:13px;line-height:1.5;overflow:auto;color:var(--text);margin:0 0 14px}
   .problem .body ul{margin:0 0 14px;padding-left:20px} .problem .body li{margin:5px 0}
+  .problem .body a.lc-link{color:var(--amber-2);text-decoration:none;font-weight:600;
+    border-bottom:1px solid rgba(242,166,59,.4)}
+  .problem .body a.lc-link:hover{border-bottom-color:var(--amber-2)}
   .problem .body h4{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);
     margin:22px 0 9px}
 
@@ -341,99 +344,126 @@
 
 <script>
 /* ============================ problems ============================ */
+// Each problem: number, difficulty, pattern, LeetCode slug, title, and a short
+// original blurb (LeetCode's own wording is copyrighted — the link has the full text).
+// The picker is grouped by pattern; the starter is a minimal Java scratch stub.
+function P(num, diff, pattern, slug, title, blurb){
+  const url = "https://leetcode.com/problems/"+slug+"/";
+  return {
+    id: slug, num, title, diff, pattern, url,
+    html:`<p>${blurb}</p>\n<p><a class="lc-link" href="${url}" target="_blank" rel="noopener">Full problem on LeetCode · #${num} →</a></p>`,
+    starter:`class Solution {\n    // #${num} ${title} — ${pattern}\n    // Write your solution here.\n}`
+  };
+}
 const PROBLEMS = [
-  {
-    id:"twosum", title:"Two Sum", diff:"easy", pattern:"Arrays & Hashing",
-    html:`<p>Given an array of integers <code>nums</code> and an integer <code>target</code>, return the <strong>indices</strong> of the two numbers that add up to <code>target</code>.</p>
-      <p>Assume exactly one valid answer, and you may not use the same element twice.</p>
-      <h4>Example</h4>
-      <pre>nums = [2, 7, 11, 15], target = 9
-→ [0, 1]   (nums[0] + nums[1] = 9)</pre>
-      <h4>Constraints</h4>
-      <ul><li>2 ≤ nums.length ≤ 10⁴</li><li>Exactly one solution exists</li></ul>`,
-    starter:`class Solution {
-    public int[] twoSum(int[] nums, int target) {
-        // Your code here
-
-    }
-}`
-  },
-  {
-    id:"dupe", title:"Contains Duplicate", diff:"easy", pattern:"Arrays & Hashing",
-    html:`<p>Given an integer array <code>nums</code>, return <code>true</code> if any value appears <strong>at least twice</strong>, and <code>false</code> if every element is distinct.</p>
-      <h4>Example</h4>
-      <pre>nums = [1, 2, 3, 1]  → true
-nums = [1, 2, 3, 4]  → false</pre>`,
-    starter:`class Solution {
-    public boolean containsDuplicate(int[] nums) {
-        // Your code here
-
-    }
-}`
-  },
-  {
-    id:"anagram", title:"Valid Anagram", diff:"easy", pattern:"Arrays & Hashing",
-    html:`<p>Given two strings <code>s</code> and <code>t</code>, return <code>true</code> if <code>t</code> is an anagram of <code>s</code>.</p>
-      <p>An anagram uses exactly the same characters, rearranged.</p>
-      <h4>Example</h4>
-      <pre>s = "listen", t = "silent"  → true
-s = "hello",  t = "world"   → false</pre>`,
-    starter:`class Solution {
-    public boolean isAnagram(String s, String t) {
-        // Your code here
-
-    }
-}`
-  },
-  {
-    id:"groupana", title:"Group Anagrams", diff:"medium", pattern:"Arrays & Hashing",
-    html:`<p>Given an array of strings <code>strs</code>, group the anagrams together. Return the groups in any order.</p>
-      <h4>Example</h4>
-      <pre>strs = ["eat","tea","tan","ate","nat","bat"]
-→ [["bat"],["nat","tan"],["ate","eat","tea"]]</pre>
-      <h4>Constraints</h4>
-      <ul><li>1 ≤ strs.length ≤ 10⁴</li><li>strs[i] is lowercase English letters</li></ul>`,
-    starter:`import java.util.*;
-
-class Solution {
-    public List<List<String>> groupAnagrams(String[] strs) {
-        // Your code here
-
-    }
-}`
-  },
-  {
-    id:"topk", title:"Top K Frequent Elements", diff:"medium", pattern:"Arrays & Hashing / Heap",
-    html:`<p>Given an integer array <code>nums</code> and an integer <code>k</code>, return the <code>k</code> most frequent elements, in any order.</p>
-      <h4>Example</h4>
-      <pre>nums = [1,1,1,2,2,3], k = 2  → [1, 2]</pre>
-      <h4>Follow-up</h4>
-      <p>Can you do better than O(n log n)?</p>`,
-    starter:`import java.util.*;
-
-class Solution {
-    public int[] topKFrequent(int[] nums, int k) {
-        // Your code here
-
-    }
-}`
-  },
-  {
-    id:"parens", title:"Valid Parentheses", diff:"easy", pattern:"Stack",
-    html:`<p>Given a string <code>s</code> of just <code>()[]{}</code>, determine if the brackets are validly opened and closed, in the correct order.</p>
-      <h4>Example</h4>
-      <pre>"()[]{}"  → true
-"(]"      → false
-"([)]"    → false</pre>`,
-    starter:`import java.util.*;
-
-class Solution {
-    public boolean isValid(String s) {
-        // Your code here
-
-    }
-}`
-  }
+  // ---- Arrays & Hashing ----
+  P(1,"easy","Arrays & Hashing","two-sum","Two Sum","Return the indices of the two numbers in an array that add up to a target (exactly one answer)."),
+  P(217,"easy","Arrays & Hashing","contains-duplicate","Contains Duplicate","Return true if any value appears at least twice in the array."),
+  P(242,"easy","Arrays & Hashing","valid-anagram","Valid Anagram","Return true if one string is a rearrangement of the other's characters."),
+  P(49,"medium","Arrays & Hashing","group-anagrams","Group Anagrams","Group the strings that are anagrams of one another."),
+  P(347,"medium","Arrays & Hashing","top-k-frequent-elements","Top K Frequent Elements","Return the k most frequent elements. Can you beat O(n log n)?"),
+  P(238,"medium","Arrays & Hashing","product-of-array-except-self","Product of Array Except Self","For each index return the product of all other elements — no division, O(n)."),
+  // ---- Two Pointers ----
+  P(125,"easy","Two Pointers","valid-palindrome","Valid Palindrome","Return true if the string reads the same both ways, ignoring case and non-alphanumerics."),
+  P(167,"medium","Two Pointers","two-sum-ii-input-array-is-sorted","Two Sum II — Input Array Is Sorted","Find two numbers in a sorted array summing to a target; return their 1-based indices."),
+  P(15,"medium","Two Pointers","3sum","3Sum","Find all unique triplets in the array that sum to zero."),
+  P(11,"medium","Two Pointers","container-with-most-water","Container With Most Water","Choose two lines that with the x-axis hold the most water."),
+  P(42,"hard","Two Pointers","trapping-rain-water","Trapping Rain Water","Given bar heights, compute how much rainwater is trapped between them."),
+  // ---- Sliding Window ----
+  P(121,"easy","Sliding Window","best-time-to-buy-and-sell-stock","Best Time to Buy and Sell Stock","Max profit from a single buy and a later sell."),
+  P(3,"medium","Sliding Window","longest-substring-without-repeating-characters","Longest Substring Without Repeating Characters","Length of the longest substring with all-distinct characters."),
+  P(424,"medium","Sliding Window","longest-repeating-character-replacement","Longest Repeating Character Replacement","Longest run of one letter you can make with up to k replacements."),
+  P(567,"medium","Sliding Window","permutation-in-string","Permutation in String","Return true if one string contains a permutation of the other as a substring."),
+  P(76,"hard","Sliding Window","minimum-window-substring","Minimum Window Substring","Smallest substring of s that contains every character of t."),
+  // ---- Stack ----
+  P(20,"easy","Stack","valid-parentheses","Valid Parentheses","Return true if the brackets ()[]{} are opened and closed in the correct order."),
+  P(155,"medium","Stack","min-stack","Min Stack","Design a stack that also returns its current minimum in O(1)."),
+  P(150,"medium","Stack","evaluate-reverse-polish-notation","Evaluate Reverse Polish Notation","Evaluate an arithmetic expression given in Reverse Polish Notation."),
+  P(739,"medium","Stack","daily-temperatures","Daily Temperatures","For each day, how many days until a warmer one (monotonic stack)."),
+  P(853,"medium","Stack","car-fleet","Car Fleet","Count how many fleets of cars arrive at the destination."),
+  P(84,"hard","Stack","largest-rectangle-in-histogram","Largest Rectangle in Histogram","Largest rectangle area formed by contiguous histogram bars."),
+  // ---- Binary Search ----
+  P(704,"easy","Binary Search","binary-search","Binary Search","Classic binary search for a target in a sorted array."),
+  P(74,"medium","Binary Search","search-a-2d-matrix","Search a 2D Matrix","Search a value in a fully sorted matrix in O(log mn)."),
+  P(153,"medium","Binary Search","find-minimum-in-rotated-sorted-array","Find Minimum in Rotated Sorted Array","Find the minimum of a rotated sorted array in O(log n)."),
+  P(33,"medium","Binary Search","search-in-rotated-sorted-array","Search in Rotated Sorted Array","Find a target in a rotated sorted array in O(log n)."),
+  P(875,"medium","Binary Search","koko-eating-bananas","Koko Eating Bananas","Minimum eating speed to finish within h hours — search on the answer."),
+  P(4,"hard","Binary Search","median-of-two-sorted-arrays","Median of Two Sorted Arrays","Median of two sorted arrays in O(log(m+n))."),
+  // ---- Linked List ----
+  P(206,"easy","Linked List","reverse-linked-list","Reverse Linked List","Reverse a singly linked list."),
+  P(21,"easy","Linked List","merge-two-sorted-lists","Merge Two Sorted Lists","Merge two sorted linked lists into one sorted list."),
+  P(141,"easy","Linked List","linked-list-cycle","Linked List Cycle","Detect whether a linked list contains a cycle (fast/slow pointers)."),
+  P(19,"medium","Linked List","remove-nth-node-from-end-of-list","Remove Nth Node From End of List","Remove the nth node from the end in a single pass."),
+  P(143,"medium","Linked List","reorder-list","Reorder List","Reorder a list as first, last, second, second-last, …"),
+  P(146,"medium","Linked List","lru-cache","LRU Cache","Design an O(1) get/put LRU cache (hash map + doubly linked list)."),
+  P(23,"hard","Linked List","merge-k-sorted-lists","Merge k Sorted Lists","Merge k sorted linked lists into one sorted list."),
+  // ---- Trees ----
+  P(226,"easy","Trees","invert-binary-tree","Invert Binary Tree","Mirror a binary tree left-to-right."),
+  P(104,"easy","Trees","maximum-depth-of-binary-tree","Maximum Depth of Binary Tree","Return the maximum depth of a binary tree."),
+  P(572,"easy","Trees","subtree-of-another-tree","Subtree of Another Tree","Return true if one tree contains another as a subtree."),
+  P(102,"medium","Trees","binary-tree-level-order-traversal","Binary Tree Level Order Traversal","Return node values level by level (BFS)."),
+  P(98,"medium","Trees","validate-binary-search-tree","Validate Binary Search Tree","Return true if the tree is a valid BST."),
+  P(235,"medium","Trees","lowest-common-ancestor-of-a-binary-search-tree","Lowest Common Ancestor of a BST","Lowest common ancestor of two nodes in a BST."),
+  P(230,"medium","Trees","kth-smallest-element-in-a-bst","Kth Smallest Element in a BST","Return the kth smallest value in a BST."),
+  P(105,"medium","Trees","construct-binary-tree-from-preorder-and-inorder-traversal","Construct Tree from Preorder and Inorder","Rebuild a binary tree from its preorder and inorder traversals."),
+  P(297,"hard","Trees","serialize-and-deserialize-binary-tree","Serialize and Deserialize Binary Tree","Encode a binary tree to a string and decode it back."),
+  P(124,"hard","Trees","binary-tree-maximum-path-sum","Binary Tree Maximum Path Sum","Maximum path sum between any two nodes."),
+  // ---- Tries ----
+  P(208,"medium","Tries","implement-trie-prefix-tree","Implement Trie (Prefix Tree)","Implement a trie with insert, search, and startsWith."),
+  P(211,"medium","Tries","design-add-and-search-words-data-structure","Design Add and Search Words Data Structure","A word dictionary supporting '.' wildcard search."),
+  P(212,"hard","Tries","word-search-ii","Word Search II","Find all dictionary words present in a letter grid (trie + backtracking)."),
+  // ---- Heaps / Priority Queue ----
+  P(703,"easy","Heaps / Priority Queue","kth-largest-element-in-a-stream","Kth Largest Element in a Stream","Return the kth largest value as numbers stream in."),
+  P(1046,"easy","Heaps / Priority Queue","last-stone-weight","Last Stone Weight","Smash the two heaviest stones repeatedly; return the last remaining weight."),
+  P(973,"medium","Heaps / Priority Queue","k-closest-points-to-origin","K Closest Points to Origin","Return the k points closest to the origin."),
+  P(215,"medium","Heaps / Priority Queue","kth-largest-element-in-an-array","Kth Largest Element in an Array","Return the kth largest element — compare a heap vs quickselect."),
+  P(621,"medium","Heaps / Priority Queue","task-scheduler","Task Scheduler","Least time to run tasks with a cooldown between identical ones."),
+  P(295,"hard","Heaps / Priority Queue","find-median-from-data-stream","Find Median from Data Stream","Maintain a running median of a stream using two heaps."),
+  // ---- Backtracking ----
+  P(78,"medium","Backtracking","subsets","Subsets","Return all subsets of a set of distinct integers."),
+  P(39,"medium","Backtracking","combination-sum","Combination Sum","All combinations summing to a target; numbers may be reused."),
+  P(46,"medium","Backtracking","permutations","Permutations","Return all permutations of distinct integers."),
+  P(79,"medium","Backtracking","word-search","Word Search","Return true if a word can be traced through adjacent grid cells."),
+  P(131,"medium","Backtracking","palindrome-partitioning","Palindrome Partitioning","All ways to split a string into palindromic substrings."),
+  P(51,"hard","Backtracking","n-queens","N-Queens","Place n queens on an n×n board so none attack each other."),
+  // ---- Graphs ----
+  P(200,"medium","Graphs","number-of-islands","Number of Islands","Count islands of '1's in a grid (DFS/BFS)."),
+  P(133,"medium","Graphs","clone-graph","Clone Graph","Deep-copy a connected undirected graph."),
+  P(994,"medium","Graphs","rotting-oranges","Rotting Oranges","Minutes until every orange rots (multi-source BFS)."),
+  P(417,"medium","Graphs","pacific-atlantic-water-flow","Pacific Atlantic Water Flow","Cells from which water can reach both oceans."),
+  P(207,"medium","Graphs","course-schedule","Course Schedule","Can all courses be finished given prerequisites? (cycle detection)."),
+  P(323,"medium","Graphs","number-of-connected-components-in-an-undirected-graph","Number of Connected Components","Count connected components with union-find."),
+  P(261,"medium","Graphs","graph-valid-tree","Graph Valid Tree","Return true if the edges form a valid tree."),
+  P(127,"hard","Graphs","word-ladder","Word Ladder","Shortest transformation sequence between two words (BFS)."),
+  P(269,"hard","Graphs","alien-dictionary","Alien Dictionary","Derive letter order from a sorted alien word list (topological sort)."),
+  // ---- Intervals ----
+  P(56,"medium","Intervals","merge-intervals","Merge Intervals","Merge all overlapping intervals."),
+  P(57,"medium","Intervals","insert-interval","Insert Interval","Insert a new interval into a sorted list and merge as needed."),
+  P(435,"medium","Intervals","non-overlapping-intervals","Non-overlapping Intervals","Minimum intervals to remove so none overlap."),
+  P(253,"medium","Intervals","meeting-rooms-ii","Meeting Rooms II","Minimum meeting rooms needed (min-heap of end times)."),
+  // ---- Greedy ----
+  P(53,"medium","Greedy","maximum-subarray","Maximum Subarray","Largest sum of a contiguous subarray (Kadane's)."),
+  P(55,"medium","Greedy","jump-game","Jump Game","Can you reach the last index given each cell's max jump?"),
+  P(45,"medium","Greedy","jump-game-ii","Jump Game II","Minimum jumps to reach the last index."),
+  P(134,"medium","Greedy","gas-station","Gas Station","Starting station to complete the circular route, or -1."),
+  P(846,"medium","Greedy","hand-of-straights","Hand of Straights","Can the hand split into consecutive runs of a given size?"),
+  // ---- Dynamic Programming ----
+  P(70,"easy","Dynamic Programming","climbing-stairs","Climbing Stairs","Number of ways to climb n stairs taking 1 or 2 steps."),
+  P(198,"medium","Dynamic Programming","house-robber","House Robber","Max sum of non-adjacent houses."),
+  P(213,"medium","Dynamic Programming","house-robber-ii","House Robber II","House Robber where the houses are arranged in a circle."),
+  P(322,"medium","Dynamic Programming","coin-change","Coin Change","Fewest coins to make an amount, or -1."),
+  P(300,"medium","Dynamic Programming","longest-increasing-subsequence","Longest Increasing Subsequence","Length of the longest strictly increasing subsequence."),
+  P(139,"medium","Dynamic Programming","word-break","Word Break","Can the string be segmented into dictionary words?"),
+  P(91,"medium","Dynamic Programming","decode-ways","Decode Ways","Number of ways to decode a digit string into letters."),
+  P(5,"medium","Dynamic Programming","longest-palindromic-substring","Longest Palindromic Substring","Return the longest palindromic substring."),
+  P(62,"medium","Dynamic Programming","unique-paths","Unique Paths","Count paths from top-left to bottom-right moving only right/down."),
+  P(1143,"medium","Dynamic Programming","longest-common-subsequence","Longest Common Subsequence","Length of the longest common subsequence of two strings."),
+  // ---- Bit Manipulation / Math ----
+  P(136,"easy","Bit Manipulation / Math","single-number","Single Number","Find the element that appears once (XOR cancels pairs)."),
+  P(191,"easy","Bit Manipulation / Math","number-of-1-bits","Number of 1 Bits","Count the set bits in an integer."),
+  P(338,"easy","Bit Manipulation / Math","counting-bits","Counting Bits","Set-bit count for every number from 0 to n."),
+  P(268,"easy","Bit Manipulation / Math","missing-number","Missing Number","Find the missing number in the range 0..n."),
+  P(190,"easy","Bit Manipulation / Math","reverse-bits","Reverse Bits","Reverse the bits of a 32-bit unsigned integer.")
 ];
 
 /* ============================ interviewer brain ============================ */
@@ -640,7 +670,7 @@ async function speakNeural(text){
 // Record the mic with MediaRecorder, detect end-of-speech with a Web Audio VAD, then
 // transcribe the clip via OpenAI /v1/audio/transcriptions. Replaces the browser's
 // Web Speech recognizer (Chrome-only). The mic stream is acquired once and reused.
-const PAUSE_MS = 1200, VAD_INTERVAL = 100, SPEECH_RMS = 0.02, SILENCE_RMS = 0.012;
+const PAUSE_MS = 2500, VAD_INTERVAL = 100, SPEECH_RMS = 0.02, SILENCE_RMS = 0.012;
 let listening = false, handsFree = false;
 let micStream = null, mediaRec = null, recChunks = [], audioCtx = null, analyser = null;
 let vadTimer = null, heardSpeech = false, silenceMs = 0;
@@ -788,13 +818,24 @@ function addMsg(who, text){
 function renderProblem(){
   const p=currentProblem;
   problemPane.innerHTML =
-    `<div class="eyebrow">Problem</div>
+    `<div class="eyebrow">Problem · #${p.num}</div>
      <h2>${p.title}</h2>
      <div><span class="chip ${p.diff}">${p.diff}</span><span class="chip pattern">${p.pattern}</span></div>
      <div class="body">${p.html}</div>`;
 }
 function renderSelect(){
-  problemSelect.innerHTML = PROBLEMS.map(p=>`<option value="${p.id}">${p.title} · ${p.diff}</option>`).join("");
+  // Group the picker by pattern (in the order patterns first appear in PROBLEMS).
+  const groups = [];
+  PROBLEMS.forEach(p=>{
+    let g = groups.find(x=>x.pattern===p.pattern);
+    if(!g){ g={pattern:p.pattern, items:[]}; groups.push(g); }
+    g.items.push(p);
+  });
+  problemSelect.innerHTML = groups.map(g=>
+    `<optgroup label="${g.pattern}">`+
+    g.items.map(p=>`<option value="${p.id}">#${p.num} ${p.title} · ${p.diff}</option>`).join("")+
+    `</optgroup>`
+  ).join("");
 }
 
 /* ============================ turns ============================ */

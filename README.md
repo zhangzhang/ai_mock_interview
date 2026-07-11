@@ -26,8 +26,11 @@ own OpenAI API key, which never leaves the page.
   matching default voice.
 - **Adjustable speech speed**, a **resizable divider** between the problem and editor
   panes, and a syntax-highlighted Java editor (CodeMirror).
-- **Six built-in problems** (Java): Two Sum, Contains Duplicate, Valid Anagram,
-  Group Anagrams, Top K Frequent Elements, Valid Parentheses.
+- **A pattern-based problem bank** (Java): ~90 curated LeetCode problems grouped by
+  the 15 core interview patterns (Arrays & Hashing, Two Pointers, Sliding Window,
+  Stack, Binary Search, Linked List, Trees, Tries, Heaps, Backtracking, Graphs,
+  Intervals, Greedy, DP, Bit/Math). Each shows a short summary and links to the full
+  statement; the picker is grouped so you can drill one pattern at a time.
 
 ## Getting started
 
