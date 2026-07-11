@@ -347,16 +347,132 @@
 // Each problem carries a self-contained, original write-up (description + a worked
 // example, and a constraint where it matters) — not LeetCode's copyrighted wording —
 // plus a reference link. The picker is grouped by pattern; starter is a Java stub.
+// Java starter skeletons, keyed by slug. sol() wraps a single method in class Solution;
+// solNode() prefixes a node-shape comment (tree/list/graph); design problems get a full
+// class. Bodies are left blank for you to fill.
+function sol(sig){ return "class Solution {\n    "+sig+" {\n        \n    }\n}"; }
+function solNode(note, sig){ return "// Definition: "+note+"\n"+sol(sig); }
+const TN = "TreeNode { int val; TreeNode left, right; }";
+const LN = "ListNode { int val; ListNode next; }";
+const STARTERS = {
+  // Arrays & Hashing
+  "two-sum": sol("public int[] twoSum(int[] nums, int target)"),
+  "contains-duplicate": sol("public boolean containsDuplicate(int[] nums)"),
+  "valid-anagram": sol("public boolean isAnagram(String s, String t)"),
+  "group-anagrams": sol("public List<List<String>> groupAnagrams(String[] strs)"),
+  "top-k-frequent-elements": sol("public int[] topKFrequent(int[] nums, int k)"),
+  "product-of-array-except-self": sol("public int[] productExceptSelf(int[] nums)"),
+  // Two Pointers
+  "valid-palindrome": sol("public boolean isPalindrome(String s)"),
+  "two-sum-ii-input-array-is-sorted": sol("public int[] twoSum(int[] numbers, int target)"),
+  "3sum": sol("public List<List<Integer>> threeSum(int[] nums)"),
+  "container-with-most-water": sol("public int maxArea(int[] height)"),
+  "trapping-rain-water": sol("public int trap(int[] height)"),
+  // Sliding Window
+  "best-time-to-buy-and-sell-stock": sol("public int maxProfit(int[] prices)"),
+  "longest-substring-without-repeating-characters": sol("public int lengthOfLongestSubstring(String s)"),
+  "longest-repeating-character-replacement": sol("public int characterReplacement(String s, int k)"),
+  "permutation-in-string": sol("public boolean checkInclusion(String s1, String s2)"),
+  "minimum-window-substring": sol("public String minWindow(String s, String t)"),
+  // Stack
+  "valid-parentheses": sol("public boolean isValid(String s)"),
+  "min-stack": "class MinStack {\n    public MinStack() {\n        \n    }\n    public void push(int val) {\n        \n    }\n    public void pop() {\n        \n    }\n    public int top() {\n        \n    }\n    public int getMin() {\n        \n    }\n}",
+  "evaluate-reverse-polish-notation": sol("public int evalRPN(String[] tokens)"),
+  "daily-temperatures": sol("public int[] dailyTemperatures(int[] temperatures)"),
+  "car-fleet": sol("public int carFleet(int target, int[] position, int[] speed)"),
+  "largest-rectangle-in-histogram": sol("public int largestRectangleArea(int[] heights)"),
+  // Binary Search
+  "binary-search": sol("public int search(int[] nums, int target)"),
+  "search-a-2d-matrix": sol("public boolean searchMatrix(int[][] matrix, int target)"),
+  "find-minimum-in-rotated-sorted-array": sol("public int findMin(int[] nums)"),
+  "search-in-rotated-sorted-array": sol("public int search(int[] nums, int target)"),
+  "koko-eating-bananas": sol("public int minEatingSpeed(int[] piles, int h)"),
+  "median-of-two-sorted-arrays": sol("public double findMedianSortedArrays(int[] nums1, int[] nums2)"),
+  // Linked List
+  "reverse-linked-list": solNode(LN, "public ListNode reverseList(ListNode head)"),
+  "merge-two-sorted-lists": solNode(LN, "public ListNode mergeTwoLists(ListNode list1, ListNode list2)"),
+  "linked-list-cycle": solNode(LN, "public boolean hasCycle(ListNode head)"),
+  "remove-nth-node-from-end-of-list": solNode(LN, "public ListNode removeNthFromEnd(ListNode head, int n)"),
+  "reorder-list": solNode(LN, "public void reorderList(ListNode head)"),
+  "lru-cache": "class LRUCache {\n    public LRUCache(int capacity) {\n        \n    }\n    public int get(int key) {\n        \n    }\n    public void put(int key, int value) {\n        \n    }\n}",
+  "merge-k-sorted-lists": solNode(LN, "public ListNode mergeKLists(ListNode[] lists)"),
+  // Trees
+  "invert-binary-tree": solNode(TN, "public TreeNode invertTree(TreeNode root)"),
+  "maximum-depth-of-binary-tree": solNode(TN, "public int maxDepth(TreeNode root)"),
+  "subtree-of-another-tree": solNode(TN, "public boolean isSubtree(TreeNode root, TreeNode subRoot)"),
+  "binary-tree-level-order-traversal": solNode(TN, "public List<List<Integer>> levelOrder(TreeNode root)"),
+  "validate-binary-search-tree": solNode(TN, "public boolean isValidBST(TreeNode root)"),
+  "lowest-common-ancestor-of-a-binary-search-tree": solNode(TN, "public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q)"),
+  "kth-smallest-element-in-a-bst": solNode(TN, "public int kthSmallest(TreeNode root, int k)"),
+  "construct-binary-tree-from-preorder-and-inorder-traversal": solNode(TN, "public TreeNode buildTree(int[] preorder, int[] inorder)"),
+  "serialize-and-deserialize-binary-tree": "// Definition: "+TN+"\npublic class Codec {\n    public String serialize(TreeNode root) {\n        \n    }\n    public TreeNode deserialize(String data) {\n        \n    }\n}",
+  "binary-tree-maximum-path-sum": solNode(TN, "public int maxPathSum(TreeNode root)"),
+  // Tries
+  "implement-trie-prefix-tree": "class Trie {\n    public Trie() {\n        \n    }\n    public void insert(String word) {\n        \n    }\n    public boolean search(String word) {\n        \n    }\n    public boolean startsWith(String prefix) {\n        \n    }\n}",
+  "design-add-and-search-words-data-structure": "class WordDictionary {\n    public WordDictionary() {\n        \n    }\n    public void addWord(String word) {\n        \n    }\n    public boolean search(String word) {\n        \n    }\n}",
+  "word-search-ii": sol("public List<String> findWords(char[][] board, String[] words)"),
+  // Heaps / Priority Queue
+  "kth-largest-element-in-a-stream": "class KthLargest {\n    public KthLargest(int k, int[] nums) {\n        \n    }\n    public int add(int val) {\n        \n    }\n}",
+  "last-stone-weight": sol("public int lastStoneWeight(int[] stones)"),
+  "k-closest-points-to-origin": sol("public int[][] kClosest(int[][] points, int k)"),
+  "kth-largest-element-in-an-array": sol("public int findKthLargest(int[] nums, int k)"),
+  "task-scheduler": sol("public int leastInterval(char[] tasks, int n)"),
+  "find-median-from-data-stream": "class MedianFinder {\n    public MedianFinder() {\n        \n    }\n    public void addNum(int num) {\n        \n    }\n    public double findMedian() {\n        \n    }\n}",
+  // Backtracking
+  "subsets": sol("public List<List<Integer>> subsets(int[] nums)"),
+  "combination-sum": sol("public List<List<Integer>> combinationSum(int[] candidates, int target)"),
+  "permutations": sol("public List<List<Integer>> permute(int[] nums)"),
+  "word-search": sol("public boolean exist(char[][] board, String word)"),
+  "palindrome-partitioning": sol("public List<List<String>> partition(String s)"),
+  "n-queens": sol("public List<List<String>> solveNQueens(int n)"),
+  // Graphs
+  "number-of-islands": sol("public int numIslands(char[][] grid)"),
+  "clone-graph": solNode("Node { int val; List<Node> neighbors; }", "public Node cloneGraph(Node node)"),
+  "rotting-oranges": sol("public int orangesRotting(int[][] grid)"),
+  "pacific-atlantic-water-flow": sol("public List<List<Integer>> pacificAtlantic(int[][] heights)"),
+  "course-schedule": sol("public boolean canFinish(int numCourses, int[][] prerequisites)"),
+  "number-of-connected-components-in-an-undirected-graph": sol("public int countComponents(int n, int[][] edges)"),
+  "graph-valid-tree": sol("public boolean validTree(int n, int[][] edges)"),
+  "word-ladder": sol("public int ladderLength(String beginWord, String endWord, List<String> wordList)"),
+  "alien-dictionary": sol("public String alienOrder(String[] words)"),
+  // Intervals
+  "merge-intervals": sol("public int[][] merge(int[][] intervals)"),
+  "insert-interval": sol("public int[][] insert(int[][] intervals, int[] newInterval)"),
+  "non-overlapping-intervals": sol("public int eraseOverlapIntervals(int[][] intervals)"),
+  "meeting-rooms-ii": sol("public int minMeetingRooms(int[][] intervals)"),
+  // Greedy
+  "maximum-subarray": sol("public int maxSubArray(int[] nums)"),
+  "jump-game": sol("public boolean canJump(int[] nums)"),
+  "jump-game-ii": sol("public int jump(int[] nums)"),
+  "gas-station": sol("public int canCompleteCircuit(int[] gas, int[] cost)"),
+  "hand-of-straights": sol("public boolean isNStraightHand(int[] hand, int groupSize)"),
+  // Dynamic Programming
+  "climbing-stairs": sol("public int climbStairs(int n)"),
+  "house-robber": sol("public int rob(int[] nums)"),
+  "house-robber-ii": sol("public int rob(int[] nums)"),
+  "coin-change": sol("public int coinChange(int[] coins, int amount)"),
+  "longest-increasing-subsequence": sol("public int lengthOfLIS(int[] nums)"),
+  "word-break": sol("public boolean wordBreak(String s, List<String> wordDict)"),
+  "decode-ways": sol("public int numDecodings(String s)"),
+  "longest-palindromic-substring": sol("public String longestPalindrome(String s)"),
+  "unique-paths": sol("public int uniquePaths(int m, int n)"),
+  "longest-common-subsequence": sol("public int longestCommonSubsequence(String text1, String text2)"),
+  // Bit Manipulation / Math
+  "single-number": sol("public int singleNumber(int[] nums)"),
+  "number-of-1-bits": sol("public int hammingWeight(int n)"),
+  "counting-bits": sol("public int[] countBits(int n)"),
+  "missing-number": sol("public int missingNumber(int[] nums)"),
+  "reverse-bits": sol("public int reverseBits(int n)")
+};
 function P(num, diff, pattern, slug, title, desc, ex, con){
   const url = "https://leetcode.com/problems/"+slug+"/";
   let body = "<p>"+desc+"</p>";
   if(ex)  body += "<h4>Example</h4><pre>"+ex+"</pre>";
   if(con) body += "<h4>Constraints</h4><p>"+con+"</p>";
   body += '<p><a class="lc-link" href="'+url+'" target="_blank" rel="noopener">Reference · LeetCode #'+num+' →</a></p>';
-  return {
-    id: slug, num, title, diff, pattern, url, html: body,
-    starter: "class Solution {\n    // #"+num+" "+title+" — "+pattern+"\n    // Write your solution here.\n}"
-  };
+  let starter = STARTERS[slug] || ("class Solution {\n    // #"+num+" "+title+"\n    // Write your solution here.\n}");
+  if(/List<|Map<|Set<|Deque|PriorityQueue/.test(starter)) starter = "import java.util.*;\n\n"+starter;
+  return { id: slug, num, title, diff, pattern, url, html: body, starter };
 }
 const PROBLEMS = [
   // ---- Arrays & Hashing ----
