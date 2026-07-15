@@ -258,7 +258,8 @@
             <div class="keyrow" id="keyrow">
               <input id="apiKey" type="password" autocomplete="off" placeholder="OpenAI API key (sk-…)">
               <select id="botModel" title="Interviewer model">
-                <option value="gpt-5.5" selected>gpt-5.5</option>
+                <option value="gpt-5.6" selected>gpt-5.6</option>
+                <option value="gpt-5.5">gpt-5.5</option>
                 <option value="gpt-5">gpt-5</option>
                 <option value="gpt-5-mini">gpt-5-mini</option>
                 <option value="gpt-5-nano">gpt-5-nano</option>
@@ -291,8 +292,8 @@
             <div class="modal-label">Interviewer voice</div>
             <div class="vpanel" id="vpanel">
               <div class="seg" id="ttsSeg">
-                <button data-mode="browser" class="on">Browser voice</button>
-                <button data-mode="neural">Neural · OpenAI</button>
+                <button data-mode="browser">Browser voice</button>
+                <button data-mode="neural" class="on">Neural · OpenAI</button>
               </div>
               <div class="vrow speed-row">
                 <select id="speedSelect" title="Speech speed">
@@ -303,10 +304,10 @@
                   <option value="2.5">2.5x</option>
                 </select>
               </div>
-              <div class="vrow" id="browserRow">
+              <div class="vrow" id="browserRow" style="display:none">
                 <select id="voiceSel" title="Choose a browser voice"></select>
               </div>
-              <div class="vrow" id="neuralRow" style="display:none">
+              <div class="vrow" id="neuralRow" style="display:flex">
                 <select id="openaiVoice" title="Voice">
                   <option value="alloy">Alloy</option><option value="ash">Ash</option>
                   <option value="ballad">Ballad</option><option value="coral">Coral</option>
@@ -321,7 +322,7 @@
                   <option value="tts-1">tts-1</option>
                 </select>
               </div>
-              <div class="key-note" id="voiceNote" style="display:none">Marin, Cedar, Verse &amp; Ballad need the 4o-mini-tts model.</div>
+              <div class="key-note" id="voiceNote" style="display:block">Marin, Cedar, Verse &amp; Ballad need the 4o-mini-tts model.</div>
               <button class="pill" id="testVoice">Test voice</button>
             </div>
           </div>
@@ -638,7 +639,7 @@ async function ask(userContent){
   try{
     // GPT-5 models are reasoning models: use max_completion_tokens (not max_tokens),
     // no temperature, and a low reasoning effort to keep spoken turns fast and short.
-    const model = (document.getElementById("botModel").value||"").trim() || "gpt-5.5";
+    const model = (document.getElementById("botModel").value||"").trim() || "gpt-5.6";
     const res = await fetch("https://api.openai.com/v1/chat/completions",{
       method:"POST",
       headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+key },
@@ -670,7 +671,7 @@ async function ask(userContent){
 
 /* ============================ voice out (TTS) ============================ */
 let preferredVoice = null;
-let ttsMode = "browser";       // 'browser' | 'neural'
+let ttsMode = "neural";        // 'browser' | 'neural'
 let ttsPlaying = false;        // true while neural audio is playing
 let neuralAudio = null;
 let speechRate = 1.0;          // 0.5 - 2.0, controls both browser and neural TTS pace

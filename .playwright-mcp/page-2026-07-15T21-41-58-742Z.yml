@@ -1,0 +1,217 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - heading "Onsite" [level=1] [ref=e6]
+      - generic [ref=e7]: mock interview room
+    - combobox "Choose a problem" [ref=e8]:
+      - option "#1 Two Sum · easy" [selected]
+      - option "#217 Contains Duplicate · easy"
+      - option "#242 Valid Anagram · easy"
+      - option "#49 Group Anagrams · medium"
+      - option "#347 Top K Frequent Elements · medium"
+      - option "#238 Product of Array Except Self · medium"
+      - option "#125 Valid Palindrome · easy"
+      - option "#167 Two Sum II — Input Array Is Sorted · medium"
+      - option "#15 3Sum · medium"
+      - option "#11 Container With Most Water · medium"
+      - option "#42 Trapping Rain Water · hard"
+      - option "#121 Best Time to Buy and Sell Stock · easy"
+      - option "#3 Longest Substring Without Repeating Characters · medium"
+      - option "#424 Longest Repeating Character Replacement · medium"
+      - option "#567 Permutation in String · medium"
+      - option "#76 Minimum Window Substring · hard"
+      - option "#20 Valid Parentheses · easy"
+      - option "#155 Min Stack · medium"
+      - option "#150 Evaluate Reverse Polish Notation · medium"
+      - option "#739 Daily Temperatures · medium"
+      - option "#853 Car Fleet · medium"
+      - option "#84 Largest Rectangle in Histogram · hard"
+      - option "#704 Binary Search · easy"
+      - option "#74 Search a 2D Matrix · medium"
+      - option "#153 Find Minimum in Rotated Sorted Array · medium"
+      - option "#33 Search in Rotated Sorted Array · medium"
+      - option "#875 Koko Eating Bananas · medium"
+      - option "#4 Median of Two Sorted Arrays · hard"
+      - option "#206 Reverse Linked List · easy"
+      - option "#21 Merge Two Sorted Lists · easy"
+      - option "#141 Linked List Cycle · easy"
+      - option "#19 Remove Nth Node From End of List · medium"
+      - option "#143 Reorder List · medium"
+      - option "#146 LRU Cache · medium"
+      - option "#23 Merge k Sorted Lists · hard"
+      - option "#226 Invert Binary Tree · easy"
+      - option "#104 Maximum Depth of Binary Tree · easy"
+      - option "#572 Subtree of Another Tree · easy"
+      - option "#102 Binary Tree Level Order Traversal · medium"
+      - option "#98 Validate Binary Search Tree · medium"
+      - option "#235 Lowest Common Ancestor of a BST · medium"
+      - option "#230 Kth Smallest Element in a BST · medium"
+      - option "#105 Construct Tree from Preorder and Inorder · medium"
+      - option "#297 Serialize and Deserialize Binary Tree · hard"
+      - option "#124 Binary Tree Maximum Path Sum · hard"
+      - option "#208 Implement Trie (Prefix Tree) · medium"
+      - option "#211 Design Add and Search Words Data Structure · medium"
+      - option "#212 Word Search II · hard"
+      - option "#703 Kth Largest Element in a Stream · easy"
+      - option "#1046 Last Stone Weight · easy"
+      - option "#973 K Closest Points to Origin · medium"
+      - option "#215 Kth Largest Element in an Array · medium"
+      - option "#621 Task Scheduler · medium"
+      - option "#295 Find Median from Data Stream · hard"
+      - option "#78 Subsets · medium"
+      - option "#39 Combination Sum · medium"
+      - option "#46 Permutations · medium"
+      - option "#79 Word Search · medium"
+      - option "#131 Palindrome Partitioning · medium"
+      - option "#51 N-Queens · hard"
+      - option "#200 Number of Islands · medium"
+      - option "#133 Clone Graph · medium"
+      - option "#994 Rotting Oranges · medium"
+      - option "#417 Pacific Atlantic Water Flow · medium"
+      - option "#207 Course Schedule · medium"
+      - option "#323 Number of Connected Components · medium"
+      - option "#261 Graph Valid Tree · medium"
+      - option "#127 Word Ladder · hard"
+      - option "#269 Alien Dictionary · hard"
+      - option "#56 Merge Intervals · medium"
+      - option "#57 Insert Interval · medium"
+      - option "#435 Non-overlapping Intervals · medium"
+      - option "#253 Meeting Rooms II · medium"
+      - option "#53 Maximum Subarray · medium"
+      - option "#55 Jump Game · medium"
+      - option "#45 Jump Game II · medium"
+      - option "#134 Gas Station · medium"
+      - option "#846 Hand of Straights · medium"
+      - option "#70 Climbing Stairs · easy"
+      - option "#198 House Robber · medium"
+      - option "#213 House Robber II · medium"
+      - option "#322 Coin Change · medium"
+      - option "#300 Longest Increasing Subsequence · medium"
+      - option "#139 Word Break · medium"
+      - option "#91 Decode Ways · medium"
+      - option "#5 Longest Palindromic Substring · medium"
+      - option "#62 Unique Paths · medium"
+      - option "#1143 Longest Common Subsequence · medium"
+      - option "#136 Single Number · easy"
+      - option "#191 Number of 1 Bits · easy"
+      - option "#338 Counting Bits · easy"
+      - option "#268 Missing Number · easy"
+      - option "#190 Reverse Bits · easy"
+    - button "⚙️" [ref=e9] [cursor=pointer]
+    - button "🔊" [ref=e10] [cursor=pointer]
+    - button "Start interview" [ref=e11] [cursor=pointer]
+  - generic [ref=e12]:
+    - generic [ref=e13]:
+      - generic [ref=e14]: "Problem · #1"
+      - heading "Two Sum" [level=2] [ref=e15]
+      - generic [ref=e16]:
+        - generic [ref=e17]: easy
+        - generic [ref=e18]: Arrays & Hashing
+      - generic [ref=e19]:
+        - paragraph [ref=e20]: Given an integer array and a target, return the indices of the two values that add up to the target.
+        - heading "Example" [level=4] [ref=e21]
+        - generic [ref=e22]: nums = [2,7,11,15], target = 9 -> [0,1] (2 + 7 = 9)
+        - heading "Constraints" [level=4] [ref=e23]
+        - paragraph [ref=e24]: Exactly one valid answer; you may not reuse an element.
+        - paragraph [ref=e25]:
+          - 'link "Reference · LeetCode #1 →" [ref=e26] [cursor=pointer]':
+            - /url: https://leetcode.com/problems/two-sum/
+    - generic [ref=e28]:
+      - generic [ref=e29]:
+        - generic [ref=e30]: Solution.java
+        - generic [ref=e31]: JAVA
+        - generic [ref=e32]: you
+      - generic [ref=e35]:
+        - textbox [ref=e36]
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - generic [ref=e41]: "1"
+            - text: "class Solution {"
+          - generic [ref=e42]:
+            - generic [ref=e43]: "2"
+            - text: "public int[] twoSum(int[] nums, int target) {"
+          - generic [ref=e44]: "3"
+          - generic [ref=e46]:
+            - generic [ref=e47]: "4"
+            - text: "}"
+          - generic [ref=e48]:
+            - generic [ref=e49]: "5"
+            - text: "}"
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - generic [ref=e58]:
+            - generic [ref=e59]: Sam
+            - generic [ref=e60]: your interviewer
+          - generic [ref=e61]: idle
+        - generic [ref=e62]: Paste your OpenAI API key in Settings to wake Sam. Get one at platform.openai.com. It stays in this browser tab and is sent only to OpenAI. Serve over http://localhost so the mic works smoothly.
+        - dialog [ref=e63]:
+          - generic [ref=e64]:
+            - generic [ref=e65]: Settings
+            - button "Close settings" [active] [ref=e66] [cursor=pointer]: ✕
+          - generic [ref=e67]:
+            - generic [ref=e68]:
+              - generic [ref=e69]: Connection
+              - generic [ref=e70]:
+                - textbox "OpenAI API key (sk-…)" [ref=e71]
+                - combobox "Interviewer model" [ref=e72]:
+                  - option "gpt-5.6" [selected]
+                  - option "gpt-5.5"
+                  - option "gpt-5"
+                  - option "gpt-5-mini"
+                  - option "gpt-5-nano"
+              - generic [ref=e73]: Your key stays in this browser tab only — never saved, and sent only to OpenAI.
+            - generic [ref=e74]:
+              - generic [ref=e75]: Interviewer
+              - generic [ref=e76]:
+                - textbox "Interviewer's name" [ref=e77]: Sam
+                - combobox "Pronouns" [ref=e78]:
+                  - option "They / Them" [selected]
+                  - option "She / Her"
+                  - option "He / Him"
+            - generic [ref=e79]:
+              - generic [ref=e80]: Your voice (input)
+              - combobox "Transcription model" [ref=e82]:
+                - option "gpt-4o-transcribe" [selected]
+                - option "gpt-4o-mini-transcribe"
+                - option "whisper-1"
+            - generic [ref=e83]:
+              - generic [ref=e84]: Interviewer voice
+              - generic [ref=e85]:
+                - generic [ref=e86]:
+                  - button "Browser voice" [ref=e87] [cursor=pointer]
+                  - button "Neural · OpenAI" [ref=e88] [cursor=pointer]
+                - combobox "Speech speed" [ref=e90]:
+                  - option "0.5x"
+                  - option "1x" [selected]
+                  - option "1.5x"
+                  - option "2x"
+                  - option "2.5x"
+                - generic [ref=e91]:
+                  - combobox "Voice" [ref=e92]:
+                    - option "Alloy"
+                    - option "Ash"
+                    - option "Ballad"
+                    - option "Coral"
+                    - option "Echo"
+                    - option "Fable"
+                    - option "Onyx" [selected]
+                    - option "Nova"
+                    - option "Sage"
+                    - option "Shimmer"
+                    - option "Verse"
+                    - option "Marin"
+                    - option "Cedar"
+                  - combobox "Model" [ref=e93]:
+                    - option "4o-mini-tts" [selected]
+                    - option "tts-1-hd"
+                    - option "tts-1"
+                - generic [ref=e94]: Marin, Cedar, Verse & Ballad need the 4o-mini-tts model.
+                - button "Test voice" [ref=e95] [cursor=pointer]
+        - generic [ref=e96]: Choose a problem, then press Start interview. Sam will greet you — talk it through out loud, like a real onsite.
+        - generic [ref=e98]:
+          - button "🎤" [disabled] [ref=e99]
+          - textbox "Press Start, then talk out loud — or type here" [disabled] [ref=e100]
+          - button "Send" [disabled] [ref=e101]
+          - button "Share code" [disabled] [ref=e102]
+          - button "Hint" [disabled] [ref=e103]
+          - button "End & feedback" [disabled] [ref=e104]

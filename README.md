@@ -18,10 +18,10 @@ own OpenAI API key, which never leaves the page.
 - **Sam sees your code.** Each turn sends a snapshot of your editor, so Sam reacts to
   what you actually wrote — nudging with questions rather than handing you answers.
 - **Full OpenAI stack, one key:**
-  - **Brain** — Chat Completions (`gpt-5.5` default; `gpt-5`, `gpt-5-mini`, `gpt-5-nano`).
+  - **Brain** — Chat Completions (`gpt-5.6` default; `gpt-5.5`, `gpt-5`, `gpt-5-mini`, `gpt-5-nano`).
   - **Your voice → text** — transcription (`gpt-4o-transcribe` default; `gpt-4o-mini-transcribe`, `whisper-1`).
-  - **Sam's voice** — `gpt-4o-mini-tts` with the newest voices (marin, cedar, verse, …),
-    or a free built-in **browser voice** that needs no key.
+  - **Sam's voice** — neural `gpt-4o-mini-tts` with the newest voices (marin, cedar, verse, …)
+    on by default, or a free built-in **browser voice** that needs no key.
 - **Configurable interviewer** — set the name and pronouns; the pronoun also picks a
   matching default voice.
 - **Adjustable speech speed**, a **resizable divider** between the problem and editor
@@ -66,13 +66,14 @@ Click the **⚙ gear** in the top bar to open Settings. On first run it opens
 automatically. Fill in:
 
 - **Connection** — paste your **OpenAI API key** and choose the **interviewer model**
-  (`gpt-5.5` is a good default; `gpt-5-mini`/`gpt-5-nano` are cheaper and faster).
+  (`gpt-5.6` is the default; `gpt-5.5`/`gpt-5` are alternatives, `gpt-5-mini`/`gpt-5-nano`
+  are cheaper and faster).
 - **Interviewer** — set Sam's **name** and **pronouns** (these personalize how the
   interviewer refers to itself and pick a matching default voice).
 - **Your voice (input)** — the **transcription model** for turning your speech into
   text (`gpt-4o-transcribe` is most accurate; `gpt-4o-mini-transcribe` is faster).
-- **Interviewer voice (output)** — pick **Browser voice** (free, no key) or
-  **Neural · OpenAI** (higher quality). For OpenAI, choose a voice (marin/cedar are
+- **Interviewer voice (output)** — **Neural · OpenAI** (higher quality) is on by
+  default; you can switch to **Browser voice** (free, no key). For OpenAI, choose a voice (marin/cedar are
   the best-quality newest ones) and the TTS model, and set the **speech speed**.
   Use **Test voice** to hear it.
 
