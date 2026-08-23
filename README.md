@@ -128,8 +128,11 @@ and it's gone.
 
 `mock-interview-room.html` is the entire app — vanilla HTML/CSS/JS with two CDN
 dependencies (CodeMirror for the editor). Voice input records the mic with
-`MediaRecorder`, detects end-of-speech with a small Web Audio VAD, and transcribes the
-clip via `/v1/audio/transcriptions`. The interviewer runs on `/v1/chat/completions`
+`MediaRecorder` and detects end-of-speech with a small Web Audio VAD using **adaptive
+endpointing**: rather than one fixed silence timeout, the end-of-turn pause adapts
+within 800–5000 ms (starting at 2500 ms) to your own mid-thought pauses — snappier if
+you speak in quick bursts, more patient if you tend to pause and think — then
+transcribes the clip via `/v1/audio/transcriptions`. The interviewer runs on `/v1/chat/completions`
 (the full conversation is re-sent each turn, so context is continuous within a
 session). Sam's voice uses `/v1/audio/speech`, with the browser's speech synthesis as
 a free fallback.

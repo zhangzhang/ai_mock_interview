@@ -792,10 +792,26 @@ async function speakNeural(text){
 // Record the mic with MediaRecorder, detect end-of-speech with a Web Audio VAD, then
 // transcribe the clip via OpenAI /v1/audio/transcriptions. Replaces the browser's
 // Web Speech recognizer (Chrome-only). The mic stream is acquired once and reused.
-const PAUSE_MS = 2500, VAD_INTERVAL = 100, SPEECH_RMS = 0.02, SILENCE_RMS = 0.012;
+const VAD_INTERVAL = 100, SPEECH_RMS = 0.02, SILENCE_RMS = 0.012;
+// Adaptive endpointing: instead of one fixed silence timeout, the end-of-turn
+// pause adapts within [MIN,MAX] to the speaker's own mid-thought pauses. Every time
+// silence builds up but speech resumes (a mid-sentence pause), we record its length;
+// the effective threshold tracks the 90th percentile of those + a margin, so a fast
+// talker gets snappy turns and a thoughtful one isn't cut off. Starts at DEFAULT.
+const MIN_PAUSE_MS = 800, MAX_PAUSE_MS = 5000, DEFAULT_PAUSE_MS = 2500;
+const PAUSE_MARGIN_MS = 700;   // headroom above the user's typical mid-thought pause
+const MIN_SAMPLE_MS = 300;     // ignore tiny inter-word gaps
+const MAX_PAUSE_SAMPLES = 20;  // rolling window of recent pauses
+let pauseSamples = [], adaptivePauseMs = DEFAULT_PAUSE_MS;
 let listening = false, handsFree = false;
 let micStream = null, mediaRec = null, recChunks = [], audioCtx = null, analyser = null;
 let vadTimer = null, heardSpeech = false, silenceMs = 0;
+function recomputeAdaptivePause(){
+  if(!pauseSamples.length){ adaptivePauseMs = DEFAULT_PAUSE_MS; return; }
+  const sorted = [...pauseSamples].sort((a,b)=>a-b);
+  const p90 = sorted[Math.min(sorted.length-1, Math.floor(0.9*sorted.length))];
+  adaptivePauseMs = Math.max(MIN_PAUSE_MS, Math.min(MAX_PAUSE_MS, p90 + PAUSE_MARGIN_MS));
+}
 let sttOK = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
 
 async function ensureMic(){
@@ -844,8 +860,18 @@ async function startListening(){
     const v = micRms();
     if(v > SPEECH_RMS) heardSpeech = true;
     if(heardSpeech){
-      if(v < SILENCE_RMS){ silenceMs += VAD_INTERVAL; if(silenceMs >= PAUSE_MS) stopListening(); }
-      else silenceMs = 0;
+      if(v < SILENCE_RMS){
+        silenceMs += VAD_INTERVAL;
+        if(silenceMs >= adaptivePauseMs) stopListening();
+      } else {
+        // Speech resumed after a lull → that was a mid-thought pause. Learn from it.
+        if(silenceMs >= MIN_SAMPLE_MS){
+          pauseSamples.push(silenceMs);
+          if(pauseSamples.length > MAX_PAUSE_SAMPLES) pauseSamples.shift();
+          recomputeAdaptivePause();
+        }
+        silenceMs = 0;
+      }
     }
   }, VAD_INTERVAL);
 }
@@ -980,6 +1006,7 @@ function sendSpoken(){
 /* ============================ wiring ============================ */
 function startInterview(){
   interviewLive = true; conversation = [];
+  pauseSamples = []; adaptivePauseMs = DEFAULT_PAUSE_MS;   // fresh endpointing per session
   sessionAbort = ("AbortController" in window) ? new AbortController() : null;
   transcript.innerHTML="";
   setCode(currentProblem.starter);
