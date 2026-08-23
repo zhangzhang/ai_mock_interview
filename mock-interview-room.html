@@ -5,7 +5,7 @@
   and sees the code in your editor. Works best served over http://localhost.
 -->
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Onsite — mock interview room</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
@@ -27,8 +27,12 @@
   }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0}
+  /* iOS Safari: make body track the DYNAMIC viewport too, so it matches .app's
+     100dvh. If body stayed at 100% (= the LARGER toolbar-hidden height) while .app
+     is 100dvh, the app's bottom (dock + talkbar) could sit below the visible fold
+     where overflow:hidden hides it — that's the "interview pane disappeared" bug. */
   body{background:var(--ink);color:var(--text);font-family:var(--ui);
-    -webkit-font-smoothing:antialiased;overflow:hidden}
+    -webkit-font-smoothing:antialiased;overflow:hidden;height:100vh;height:100dvh}
   button{font-family:var(--ui);cursor:pointer;border:none;background:none;color:inherit}
   button:disabled{opacity:.4;cursor:not-allowed}
 
@@ -94,7 +98,7 @@
   .grip.dragging{background:var(--amber)}
 
   /* work pane */
-  .work{flex:1;display:flex;flex-direction:column;min-width:0}
+  .work{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0}
   .editor-head{flex:0 0 auto;display:flex;align-items:center;gap:12px;padding:9px 16px;
     background:var(--panel);border-bottom:1px solid var(--line)}
   .file{font-family:var(--mono);font-size:13px;color:var(--text)}
@@ -142,6 +146,7 @@
   .msg .tag{display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:3px}
 
   .talkbar{flex:0 0 auto;display:flex;align-items:center;gap:9px;padding:11px 16px;
+    padding-bottom:calc(11px + env(safe-area-inset-bottom));
     border-top:1px solid var(--line);background:#15171e}
   .mic{width:46px;height:46px;flex:0 0 46px;border-radius:50%;border:1px solid var(--line);
     background:var(--panel-2);display:grid;place-items:center;font-size:19px;transition:.15s}
