@@ -5,10 +5,14 @@ left is a problem sheet; on the right, a Java editor and your interviewer, **Sam
 Sam (powered by OpenAI) speaks to you, listens to you reason out loud, and sees the
 code in your editor — like a real onsite.
 
-No backend, no build step, no accounts. Everything runs in your browser with your
-own OpenAI API key, which never leaves the page.
+The page itself is static (no build step), and your OpenAI API key lives only in the
+browser tab. One catch: **OpenAI's API can't be called directly from a browser** (it
+sends no CORS header), so you deploy a tiny one-file proxy — a free Cloudflare Worker —
+that relays your requests to OpenAI. Your key transits only your own proxy; it is never
+stored. See [Set up the proxy](#set-up-the-proxy-required) below.
 
 **▶ Try it live: https://zhangzhang.github.io/ai_mock_interview/**
+(you'll need your own key **and** a proxy URL — see below)
 
 ## Features
 
@@ -38,16 +42,43 @@ The app is hosted on GitHub Pages — no install needed:
 
 **→ https://zhangzhang.github.io/ai_mock_interview/**
 
-Open it in Chrome, add your OpenAI API key in Settings, and you're ready. You need an
-OpenAI API key (create one at
-[platform.openai.com](https://platform.openai.com/api-keys)). The hosted page is
-served over HTTPS, so the microphone works and its permission is remembered.
+You need two things: an **OpenAI API key** (create one at
+[platform.openai.com](https://platform.openai.com/api-keys)) and a **proxy URL** (see
+the next section — it's a 2-minute, free, one-time setup). Open the page in Chrome, open
+Settings (⚙), paste both, and you're ready. The hosted page is served over HTTPS, so the
+microphone works and its permission is remembered.
+
+## Set up the proxy (required)
+
+OpenAI's API sends no CORS header, so **a browser cannot call `api.openai.com`
+directly** — every request (the interviewer's brain, transcription, and the neural
+voice) is blocked. The fix is a tiny relay you host yourself. The repo ships one in
+[`proxy/openai-proxy.js`](proxy/openai-proxy.js): it forwards your request to OpenAI,
+passes your `Authorization` header through untouched, and adds the CORS header the
+browser needs. It never stores, logs, or inspects your key.
+
+**Deploy it free on Cloudflare Workers (dashboard):**
+
+1. Sign in at [dash.cloudflare.com](https://dash.cloudflare.com) → **Workers & Pages** →
+   **Create** → **Worker**.
+2. Replace the starter code with the contents of `proxy/openai-proxy.js` → **Deploy**.
+3. (Recommended) edit `ALLOWED_ORIGINS` in the file to your page's origin(s) — e.g.
+   `["https://zhangzhang.github.io", "http://localhost:8731"]` — and redeploy, so only
+   your page can relay through it.
+4. Copy the worker URL (`https://<name>.<you>.workers.dev`) and paste it into the
+   **Proxy URL** field in the app's Settings.
+
+Or with the CLI: `cd proxy && npx wrangler deploy`.
+
+> Any OpenAI-compatible proxy works — if you already run one, just point **Proxy URL**
+> at it. Leave the field blank only if you're serving the page from a same-origin
+> backend that itself relays to OpenAI.
 
 ### Running it locally (for development)
 
 It's a single static file, so any static server works. **Serve it over `http://localhost`** —
 don't just double-click the file, because opening from a `file://` URL blocks the
-microphone (and re-prompts every turn) and some OpenAI requests are blocked by CORS.
+microphone (and re-prompts every turn).
 
 ```bash
 git clone git@github.com:zhangzhang/ai_mock_interview.git
@@ -56,7 +87,8 @@ python3 -m http.server 8731
 # then open http://localhost:8731/ in Chrome
 ```
 
-Chrome is recommended.
+You still need the proxy (above) even locally — add `http://localhost:8731` to the
+worker's `ALLOWED_ORIGINS`. Chrome is recommended.
 
 ## How to use
 
@@ -65,7 +97,8 @@ Chrome is recommended.
 Click the **⚙ gear** in the top bar to open Settings. On first run it opens
 automatically. Fill in:
 
-- **Connection** — paste your **OpenAI API key** and choose the **interviewer model**
+- **Connection** — paste your **OpenAI API key**, your **Proxy URL** (see
+  [Set up the proxy](#set-up-the-proxy-required)), and choose the **interviewer model**
   (`gpt-5.6` is the default; `gpt-5.5`/`gpt-5` are alternatives, `gpt-5-mini`/`gpt-5-nano`
   are cheaper and faster).
 - **Interviewer** — set Sam's **name** and **pronouns** (these personalize how the
@@ -120,9 +153,11 @@ fresh run. Tip: a refresh always starts a brand-new conversation.
 ## Privacy
 
 Your OpenAI key lives only in the page's input field, in memory, for the browser tab.
-It is never written to `localStorage`, `sessionStorage`, or cookies, and is sent only
-in the `Authorization` header of your own OpenAI API calls. Close or refresh the tab
-and it's gone.
+It is never written to `localStorage`, `sessionStorage`, or cookies. It is sent only in
+the `Authorization` header of your own API calls, which travel through **your own
+proxy** (the Cloudflare Worker you deploy) to OpenAI — the proxy forwards the header
+untouched and never stores or logs it. Close or refresh the tab and the key is gone.
+The Proxy URL you enter is also in-memory only, for the tab.
 
 ## How it works
 
@@ -135,7 +170,9 @@ you speak in quick bursts, more patient if you tend to pause and think — then
 transcribes the clip via `/v1/audio/transcriptions`. The interviewer runs on `/v1/chat/completions`
 (the full conversation is re-sent each turn, so context is continuous within a
 session). Sam's voice uses `/v1/audio/speech`, with the browser's speech synthesis as
-a free fallback.
+a free fallback. All three calls go to `<Proxy URL>/v1/...` instead of
+`api.openai.com` directly, because browsers can't reach OpenAI cross-origin (CORS) —
+see [Set up the proxy](#set-up-the-proxy-required).
 
 The conversation is one continuous session per run: **Start interview** begins a fresh
 session and a page refresh resets it.

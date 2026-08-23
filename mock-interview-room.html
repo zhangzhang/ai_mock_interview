@@ -270,7 +270,10 @@
                 <option value="gpt-5-nano">gpt-5-nano</option>
               </select>
             </div>
-            <div class="key-note">Your key stays in this browser tab only — never saved, and sent only to OpenAI.</div>
+            <div class="keyrow" id="proxyrow" style="margin-top:8px">
+              <input id="proxyUrl" type="url" autocomplete="off" placeholder="Proxy URL (https://your-worker.workers.dev)">
+            </div>
+            <div class="key-note">Browsers can't call OpenAI directly (it sends no CORS header), so requests go through a proxy <b>you</b> host — see the README. Your key stays in this tab only (never saved) and transits just your own proxy on the way to OpenAI. Leave the proxy blank only if you're already serving from a same-origin backend.</div>
           </div>
           <div class="modal-section" id="interviewerSection">
             <div class="modal-label">Interviewer</div>
@@ -639,6 +642,14 @@ function systemPrompt(){
     `\n\n--- CURRENT PROBLEM ---\nTitle: ${currentProblem.title} (${currentProblem.diff})\n${currentProblem.html.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()}\n\nThe candidate codes in Java.`;
 }
 
+// Base for all OpenAI calls. OpenAI serves no CORS header, so a browser can't hit
+// api.openai.com directly — requests go through a proxy the user hosts (see README).
+// The proxy just forwards to OpenAI and adds the CORS header; blank = same-origin/direct.
+function apiBase(){
+  const p = (document.getElementById("proxyUrl").value||"").trim().replace(/\/+$/,"");
+  return p || "https://api.openai.com";
+}
+
 async function ask(userContent){
   conversation.push({role:"user", content:userContent});
   setPresence("thinking","thinking…");
@@ -647,7 +658,7 @@ async function ask(userContent){
     // GPT-5 models are reasoning models: use max_completion_tokens (not max_tokens),
     // no temperature, and a low reasoning effort to keep spoken turns fast and short.
     const model = (document.getElementById("botModel").value||"").trim() || "gpt-5.6";
-    const res = await fetch("https://api.openai.com/v1/chat/completions",{
+    const res = await fetch(apiBase()+"/v1/chat/completions",{
       method:"POST",
       headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+key },
       signal: currentSignal(),
@@ -672,6 +683,7 @@ async function ask(userContent){
     const msg = (e && e.message) ? e.message : String(e);
     addMsg("system","(Couldn't reach your interviewer: "+msg+")");
     if(!key) showBanner("<b>"+interviewerDisplayName()+" needs an OpenAI API key.</b> Open Settings (the ⚙ icon) and paste your OpenAI key (sk-…). Get one at platform.openai.com — it stays in this tab. Then try again.","err");
+    else if(/Failed to fetch|NetworkError|Load failed/i.test(msg)) showBanner("<b>Can't reach OpenAI from the browser.</b> Browsers can't call OpenAI directly (CORS). Set a <b>Proxy URL</b> in Settings (the ⚙ icon) — deploy the one-file worker from the README, then paste its URL. Then try again.","err");
     setPresence("idle","idle");
   }
 }
@@ -768,7 +780,7 @@ async function speakNeural(text){
       else if(speechRate > 1.15) pace = " Speak at a noticeably brisker pace.";
       body.instructions = "You are a calm, warm, professional technical interviewer. Speak naturally, at a measured, unhurried pace."+pace;
     }
-    const res = await fetch("https://api.openai.com/v1/audio/speech",{
+    const res = await fetch(apiBase()+"/v1/audio/speech",{
       method:"POST",
       headers:{ "Authorization":"Bearer "+key, "Content-Type":"application/json" },
       body:JSON.stringify(body)
@@ -788,7 +800,7 @@ async function speakNeural(text){
   }catch(e){
     if(myToken !== ttsToken || isAbort(e)) return;   // stopped on purpose — stay silent
     ttsPlaying=false;
-    setNote("Neural voice failed ("+(e.message||e)+") — falling back to the browser voice. A CORS error usually means: serve the file over http://localhost.", true);
+    setNote("Neural voice failed ("+(e.message||e)+") — falling back to the browser voice. \"Failed to fetch\" usually means the Proxy URL in Settings is missing or wrong (browsers can't call OpenAI directly).", true);
     speakBrowser(text);
   }
 }
@@ -913,7 +925,7 @@ async function transcribe(blob){
   fd.append("file", blob, "audio.webm");
   fd.append("model", model);
   fd.append("response_format","json");
-  const res = await fetch("https://api.openai.com/v1/audio/transcriptions",{
+  const res = await fetch(apiBase()+"/v1/audio/transcriptions",{
     method:"POST", headers:{ "Authorization":"Bearer "+key }, body:fd, signal: currentSignal()
   });
   if(!res.ok){ let m="HTTP "+res.status; try{ const j=await res.json(); m=(j.error&&j.error.message)||m; }catch(_){} throw new Error(m); }
