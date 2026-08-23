@@ -84,7 +84,9 @@
     margin:22px 0 9px}
 
   .grip{flex:0 0 6px;background:var(--line);cursor:col-resize;transition:background .15s;
-    position:relative;z-index:2}
+    position:relative;z-index:2;touch-action:none}
+  /* widen the hit area (±9px) so the divider is grabbable by touch on iPad */
+  .grip::before{content:"";position:absolute;top:0;bottom:0;left:-9px;right:-9px}
   .grip:hover{background:#3a3f4d}
   .grip.dragging{background:var(--amber)}
 
@@ -1109,17 +1111,22 @@ problemSelect.onchange = ()=>{
     w = Math.max(min, Math.min(max, w));
     problem.style.setProperty("--problem-w", w+"px");
   }
-  grip.addEventListener("mousedown", e=>{
-    dragging=true; grip.classList.add("dragging");
-    document.body.style.cursor="col-resize"; document.body.style.userSelect="none";
-    e.preventDefault();
-  });
-  window.addEventListener("mousemove", onMove);
-  window.addEventListener("mouseup", ()=>{
+  // Pointer Events unify mouse + touch (iPad) + pen; capture keeps the drag alive
+  // even when the finger/cursor strays off the thin grip.
+  function endDrag(){
     if(!dragging) return;
     dragging=false; grip.classList.remove("dragging");
     document.body.style.cursor=""; document.body.style.userSelect="";
+  }
+  grip.addEventListener("pointerdown", e=>{
+    dragging=true; grip.classList.add("dragging");
+    try{ grip.setPointerCapture(e.pointerId); }catch(_){}
+    document.body.style.cursor="col-resize"; document.body.style.userSelect="none";
+    e.preventDefault();
   });
+  grip.addEventListener("pointermove", onMove);
+  grip.addEventListener("pointerup", endDrag);
+  grip.addEventListener("pointercancel", endDrag);
 })();
 
 /* ============================ boot ============================ */
