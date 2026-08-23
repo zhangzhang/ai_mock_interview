@@ -57,18 +57,31 @@ voice) is blocked. The fix is a tiny relay you host yourself. The repo ships one
 passes your `Authorization` header through untouched, and adds the CORS header the
 browser needs. It never stores, logs, or inspects your key.
 
-**Deploy it free on Cloudflare Workers (dashboard):**
+**Deploy it free on Cloudflare Workers.** Two ways — pick one:
+
+**A. Dashboard (inline editor — paste, don't upload).**
 
 1. Sign in at [dash.cloudflare.com](https://dash.cloudflare.com) → **Workers & Pages** →
-   **Create** → **Worker**.
-2. Replace the starter code with the contents of `proxy/openai-proxy.js` → **Deploy**.
-3. (Recommended) edit `ALLOWED_ORIGINS` in the file to your page's origin(s) — e.g.
+   **Create** → **Workers** → start from **"Hello World"**.
+2. In the Worker's **inline code editor**, select all, delete, and paste the full
+   contents of `proxy/openai-proxy.js` → **Deploy**.
+   *(Don't use the drag-and-drop file upload/import — it rejects raw Worker scripts
+   with "requires a build process". Paste into the editor instead, or use option B.)*
+3. (Recommended) edit `ALLOWED_ORIGINS` in the code to your page's origin(s) — e.g.
    `["https://zhangzhang.github.io", "http://localhost:8731"]` — and redeploy, so only
    your page can relay through it.
 4. Copy the worker URL (`https://<name>.<you>.workers.dev`) and paste it into the
    **Proxy URL** field in the app's Settings.
 
-Or with the CLI: `cd proxy && npx wrangler deploy`.
+**B. Wrangler CLI.**
+
+```bash
+cd proxy
+npx wrangler login     # opens a browser once to authorize
+npx wrangler deploy    # uses wrangler.toml; prints your worker URL
+```
+
+Then paste the printed URL into **Proxy URL** in Settings.
 
 > Any OpenAI-compatible proxy works — if you already run one, just point **Proxy URL**
 > at it. Leave the field blank only if you're serving the page from a same-origin
