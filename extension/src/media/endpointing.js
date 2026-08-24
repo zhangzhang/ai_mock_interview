@@ -1,5 +1,5 @@
 export const MIN_PAUSE_MS = 800, MAX_PAUSE_MS = 5000, DEFAULT_PAUSE_MS = 2500;
-export const PAUSE_MARGIN_MS = 700, MIN_SAMPLE_MS = 50, MAX_PAUSE_SAMPLES = 20;
+export const PAUSE_MARGIN_MS = 700, MIN_SAMPLE_MS = 300, MAX_PAUSE_SAMPLES = 20;
 
 export function makeEndpointer() {
   let samples = [];
