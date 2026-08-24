@@ -1,0 +1,27 @@
+body { margin: 0; font-family: var(--vscode-font-family); color: var(--vscode-foreground);
+  background: var(--vscode-panel-background); font-size: 13px; }
+#home { display: flex; gap: 8px; align-items: center; padding: 10px; flex-wrap: wrap; }
+select, input, button { font: inherit; color: var(--vscode-foreground);
+  background: var(--vscode-input-background); border: 1px solid var(--vscode-input-border, transparent);
+  border-radius: 6px; padding: 6px 8px; }
+button { background: var(--vscode-button-background); color: var(--vscode-button-foreground);
+  border: none; cursor: pointer; }
+button.secondary { background: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground); }
+#interview { display: flex; flex-direction: column; height: 100vh; }
+.dock-head { display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
+.orb { width: 20px; height: 20px; border-radius: 50%; background: var(--vscode-charts-orange, orange); }
+.status { margin-left: auto; opacity: .7; }
+.transcript { flex: 1; overflow: auto; padding: 8px 12px; display: flex; flex-direction: column; gap: 8px; }
+.msg { max-width: 80%; padding: 8px 11px; border-radius: 10px;
+  background: var(--vscode-editorWidget-background); }
+.msg.you { align-self: flex-end; background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground); }
+.msg.system { align-self: center; opacity: .7; font-size: 12px; }
+.banner { margin: 6px 12px; padding: 8px 10px; border-radius: 6px;
+  background: var(--vscode-inputValidation-warningBackground);
+  border: 1px solid var(--vscode-inputValidation-warningBorder); }
+.talkbar { display: flex; gap: 6px; align-items: center; padding: 8px 12px;
+  border-top: 1px solid var(--vscode-panel-border); }
+.talkbar input { flex: 1; }
+#mic.rec { background: var(--vscode-charts-red, red); color: #fff; }

@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'none'; img-src {{cspSource}} data:; media-src {{cspSource}} blob: data:; style-src {{cspSource}} 'unsafe-inline'; script-src 'nonce-{{nonce}}'; connect-src 'none';">
+<style>{{panelCss}}</style>
+</head>
+<body>
+  <section id="home">
+    <select id="problemSelect" aria-label="Choose a problem"></select>
+    <button id="startBtn">Start interview</button>
+    <button id="settingsBtn">⚙ Settings</button>
+  </section>
+  <section id="interview" hidden>
+    <header class="dock-head">
+      <div class="orb" id="orb"></div>
+      <div class="who"><b id="nameLabel">Sam</b><small>your interviewer</small></div>
+      <div class="status" id="status">idle</div>
+      <button id="settingsBtn2" title="Settings">⚙</button>
+    </header>
+    <div class="banner" id="banner" hidden></div>
+    <div class="transcript" id="transcript"></div>
+    <div class="talkbar">
+      <button id="mic" title="Talk">🎤</button>
+      <input id="textInput" placeholder="Talk out loud — or type here">
+      <button id="sendBtn">Send</button>
+      <button id="shareBtn">Share code</button>
+      <button id="hintBtn">Hint</button>
+      <button id="endBtn">End &amp; feedback</button>
+      <button id="muteBtn" title="Mute">🔊</button>
+    </div>
+  </section>
+  <script nonce="{{nonce}}" type="module">{{endpointingJs}}
+{{panelJs}}</script>
+</body>
+</html>
