@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import type { Problem } from "./problems";
-import { formatProblemMarkdown, getProblem } from "./problems";
+import type { Problem } from "./problems.ts";
+import { formatProblemMarkdown, getProblem } from "./problems.ts";
 
 export const PROBLEM_SCHEME = "onsite-problem";
 
