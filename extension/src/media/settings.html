@@ -1,0 +1,20 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'none'; style-src {{cspSource}} 'unsafe-inline'; script-src 'nonce-{{nonce}}';">
+<style>{{settingsCss}}</style></head>
+<body>
+  <h2>Onsite settings</h2>
+  <label>OpenAI API key <input id="apiKey" type="password" placeholder="sk-…"></label>
+  <p class="note" id="keyNote"></p>
+  <label>Interviewer model <select id="model"></select></label>
+  <label>Transcription model <select id="transcribeModel"></select></label>
+  <label>Voice mode <select id="voiceMode"><option value="neural">Neural · OpenAI</option><option value="browser">Browser voice</option></select></label>
+  <label>Voice <select id="voice"></select></label>
+  <label>TTS model <select id="ttsModel"></select></label>
+  <label>Speech speed <select id="speechRate"><option>0.5</option><option>1</option><option>1.5</option><option>2</option><option>2.5</option></select></label>
+  <label>Interviewer name <input id="interviewerName" maxlength="30"></label>
+  <label>Pronoun <select id="interviewerPronoun"><option value="they">They/Them</option><option value="she">She/Her</option><option value="he">He/Him</option></select></label>
+  <div class="row"><button id="save">Save</button><button id="test" class="secondary">Test voice</button></div>
+  <script nonce="{{nonce}}">{{settingsJs}}</script>
+</body></html>

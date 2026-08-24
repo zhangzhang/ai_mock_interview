@@ -1,0 +1,12 @@
+body { font-family: var(--vscode-font-family); color: var(--vscode-foreground);
+  background: var(--vscode-editor-background); padding: 18px 22px; max-width: 560px; }
+label { display: block; margin: 12px 0; }
+input, select { display: block; margin-top: 4px; width: 100%; box-sizing: border-box;
+  background: var(--vscode-input-background); color: var(--vscode-foreground);
+  border: 1px solid var(--vscode-input-border, transparent); border-radius: 6px; padding: 7px 9px; }
+.note { color: var(--vscode-descriptionForeground); font-size: 12px; margin-top: -6px; }
+.row { display: flex; gap: 8px; margin-top: 18px; }
+button { background: var(--vscode-button-background); color: var(--vscode-button-foreground);
+  border: none; border-radius: 6px; padding: 8px 14px; cursor: pointer; }
+button.secondary { background: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground); }
