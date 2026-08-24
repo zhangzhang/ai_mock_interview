@@ -1,0 +1,42 @@
+{
+  "name": "onsite-interview",
+  "displayName": "Onsite — mock interview",
+  "description": "Voice-driven mock coding interviews inside VS Code.",
+  "version": "0.1.0",
+  "publisher": "onsite",
+  "license": "MIT",
+  "engines": { "vscode": "^1.90.0" },
+  "categories": ["Other"],
+  "main": "./out/extension.js",
+  "activationEvents": ["onStartupFinished"],
+  "contributes": {
+    "viewsContainers": {
+      "panel": [
+        { "id": "onsitePanel", "title": "Onsite", "icon": "$(comment-discussion)" }
+      ]
+    },
+    "views": {
+      "onsitePanel": [
+        { "id": "onsite.samView", "type": "webview", "name": "Interview" }
+      ]
+    },
+    "commands": [
+      { "command": "onsite.reveal", "title": "Onsite: Show Interview Panel" },
+      { "command": "onsite.openSettings", "title": "Onsite: Settings" }
+    ]
+  },
+  "scripts": {
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "test": "node --import tsx --test \"test/**/*.test.ts\"",
+    "package": "npm run compile && vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.23.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.5.0"
+  }
+}
