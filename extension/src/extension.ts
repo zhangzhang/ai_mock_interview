@@ -134,9 +134,13 @@ export function activate(context: vscode.ExtensionContext): void {
       case "hint": if (session) await runAssistantTurn([...session.messages(), { role: "user", content: HINT_INSTRUCTION }]); break;
       case "shareCode": if (session && solutionDoc) await userTurn("Here's my current code — what do you think?"); break;
       case "endInterview":
-        if (session) await runAssistantTurn([...session.messages(), { role: "user", content: FEEDBACK_INSTRUCTION }]);
-        abort?.abort(); session = undefined; solutionDoc = undefined;
-        provider.post({ type: "home" });
+        if (session) {
+          await runAssistantTurn([...session.messages(), { role: "user", content: FEEDBACK_INSTRUCTION }]);
+          session = undefined; solutionDoc = undefined;
+          provider.post({ type: "endAfterSpeech" });
+        } else {
+          provider.post({ type: "home" });
+        }
         break;
     }
   });

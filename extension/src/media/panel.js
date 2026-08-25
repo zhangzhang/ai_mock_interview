@@ -2,7 +2,7 @@ const vscode = acquireVsCodeApi();
 const $ = (id) => document.getElementById(id);
 const endpointer = makeEndpointer(); // from endpointing.js (inlined above this script)
 
-let settings = null, muted = false, handsFree = false, listening = false;
+let settings = null, muted = false, handsFree = false, listening = false, pendingHome = false;
 let micStream = null, mediaRec = null, audioCtx = null, analyser = null, vadTimer = null;
 let recChunks = [], heardSpeech = false, silenceMs = 0;
 const VAD_INTERVAL = 100, SPEECH_RMS = 0.02, SILENCE_RMS = 0.012;
@@ -57,7 +57,7 @@ function playTts(bytes) {
   const blob = new Blob([new Uint8Array(bytes)], { type: "audio/mpeg" });
   const url = URL.createObjectURL(blob);
   audioEl = new Audio(url);
-  audioEl.onended = () => { URL.revokeObjectURL(url); onSpeechEnd(); };
+  audioEl.onended = () => { audioEl = null; URL.revokeObjectURL(url); onSpeechEnd(); };
   audioEl.play().catch(() => onSpeechEnd());
 }
 function speakBrowser(text, rate) {
@@ -67,7 +67,15 @@ function speakBrowser(text, rate) {
   u.rate = rate || 1; u.onend = onSpeechEnd;
   speechSynthesis.speak(u);
 }
-function onSpeechEnd() { if (handsFree && !listening) setTimeout(startListening, 300); }
+function isSpeaking() { return !!audioEl || (("speechSynthesis" in window) && speechSynthesis.speaking); }
+function goHome() {
+  $("interview").hidden = true; $("home").hidden = false;
+  handsFree = false; stopListening(); stopAudio();
+}
+function onSpeechEnd() {
+  if (pendingHome) { pendingHome = false; goHome(); return; }
+  if (handsFree && !listening) setTimeout(startListening, 300);
+}
 
 // ---- mic capture + VAD (adaptive endpointing) ----
 async function ensureMic() {
@@ -138,7 +146,8 @@ window.addEventListener("message", (ev) => {
     case "tts": if (!muted) playTts(m.bytes); else onSpeechEnd(); break;
     case "speakBrowser": if (!muted) speakBrowser(m.text, m.rate); else onSpeechEnd(); break;
     case "banner": $("banner").hidden = false; $("banner").innerHTML = m.html; break;
-    case "home": $("interview").hidden = true; $("home").hidden = false; handsFree = false; stopListening(); stopAudio(); break;
+    case "endAfterSpeech": pendingHome = true; handsFree = false; if (!isSpeaking()) onSpeechEnd(); break;
+    case "home": goHome(); break;
   }
 });
 vscode.postMessage({ type: "ready" });

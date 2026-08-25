@@ -21,7 +21,7 @@ export type HostToPanel =
   | { type: "presence"; state: string; label: string }
   | { type: "userBubble"; text: string } | { type: "samBubble"; text: string }
   | { type: "tts"; bytes: number[] } | { type: "speakBrowser"; text: string; rate: number }
-  | { type: "banner"; html: string; kind: string } | { type: "home" };
+  | { type: "banner"; html: string; kind: string } | { type: "home" } | { type: "endAfterSpeech" };
 
 export class SamViewProvider implements vscode.WebviewViewProvider {
   private view?: vscode.WebviewView;
