@@ -17,7 +17,7 @@ export type PanelToHost =
 export type HostToPanel =
   | { type: "settings"; settings: Settings }
   | { type: "problems"; groups: { pattern: string; items: { id: string; num: number; title: string; diff: string }[] }[] }
-  | { type: "interviewStarted"; title: string; name: string }
+  | { type: "interviewStarted"; name: string }
   | { type: "presence"; state: string; label: string }
   | { type: "userBubble"; text: string } | { type: "samBubble"; text: string }
   | { type: "tts"; bytes: number[] } | { type: "speakBrowser"; text: string; rate: number }

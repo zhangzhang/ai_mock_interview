@@ -5,4 +5,4 @@ tsconfig.json
 esbuild.js
 node_modules/**
 **/*.map
-!out/**
+!out/extension.js

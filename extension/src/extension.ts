@@ -29,7 +29,12 @@ export function activate(context: vscode.ExtensionContext): void {
 
   let session: InterviewSession | undefined;
   let solutionDoc: vscode.TextDocument | undefined;
-  let abort: AbortController | undefined;
+  let busy = false;
+  async function withBusy(fn: () => Promise<void>): Promise<void> {
+    if (busy) return;
+    busy = true;
+    try { await fn(); } finally { busy = false; }
+  }
 
   const persona = () => {
     const s = getSettings(context.globalState);
@@ -57,13 +62,13 @@ export function activate(context: vscode.ExtensionContext): void {
     return key;
   }
 
-  function showSettings() {
-    getKey(context.secrets).then((k) =>
-      openSettingsPage(context, settings(), !!k, {
-        save: async (patch, key) => { await setSettings(context.globalState, patch); if (key !== undefined) await setKey(context.secrets, key); sendSettings(); },
-        testVoice: async (s) => { await speak("Hi, I'm " + s.interviewerName + ". Let's begin when you're ready.", s); },
-      })
-    );
+  async function showSettings() {
+    let k = "";
+    try { k = await getKey(context.secrets); } catch { /* keychain unavailable */ }
+    openSettingsPage(context, settings(), !!k, {
+      save: async (patch, key) => { await setSettings(context.globalState, patch); if (key !== undefined) await setKey(context.secrets, key); sendSettings(); },
+      testVoice: async (s) => { await speak("Hi, I'm " + s.interviewerName + ". Let's begin when you're ready.", s); },
+    });
   }
 
   async function speak(text: string, s: Settings): Promise<void> {
@@ -71,7 +76,7 @@ export function activate(context: vscode.ExtensionContext): void {
     const key = await getKey(context.secrets);
     if (!key) return;
     try {
-      const bytes = await synthesizeSpeech(key, s.ttsModel, s.voice, text, s.speechRate, abort?.signal);
+      const bytes = await synthesizeSpeech(key, s.ttsModel, s.voice, text, s.speechRate);
       provider.post({ type: "tts", bytes: Array.from(bytes) });
     } catch { provider.post({ type: "speakBrowser", text, rate: s.speechRate }); }
   }
@@ -80,9 +85,8 @@ export function activate(context: vscode.ExtensionContext): void {
     const key = await requireKey(); if (!key) return;
     const s = settings();
     provider.post({ type: "presence", state: "thinking", label: "thinking…" });
-    abort = new AbortController();
     try {
-      const reply = await chatCompletion(key, s.model, sendMessages, abort.signal);
+      const reply = await chatCompletion(key, s.model, sendMessages);
       if (!session) return;
       session!.pushAssistant(reply);
       provider.post({ type: "samBubble", text: reply });
@@ -108,34 +112,37 @@ export function activate(context: vscode.ExtensionContext): void {
       case "ready": sendSettings(); sendProblems(); break;
       case "openSettings": showSettings(); break;
       case "startInterview": {
-        const p = getProblem(m.problemId); if (!p) return;
-        if (!(await requireKey())) return;
-        solutionDoc = await openProblemDocs(p);
-        session = new InterviewSession(persona(), p);
-        provider.reveal();
-        provider.post({ type: "interviewStarted", title: p.title, name: settings().interviewerName });
-        // greeting
-        await runAssistantTurn([...session.messages(), { role: "user", content: GREETING_HINT }]);
+        const p = getProblem(m.problemId); if (!p) break;
+        if (!(await requireKey())) break;
+        await withBusy(async () => {
+          solutionDoc = await openProblemDocs(p);
+          session = new InterviewSession(persona(), p);
+          provider.reveal();
+          provider.post({ type: "interviewStarted", name: settings().interviewerName });
+          await runAssistantTurn([...session.messages(), { role: "user", content: GREETING_HINT }]);
+        });
         break;
       }
-      case "userText": await userTurn(m.text); break;
+      case "userText": await withBusy(() => userTurn(m.text)); break;
       case "audioCaptured": {
-        const key = await requireKey(); if (!key || !session) return;
-        provider.post({ type: "presence", state: "thinking", label: "transcribing…" });
-        try {
-          const text = await transcribe(key, settings().transcribeModel, new Uint8Array(m.bytes), m.mime);
-          if (text) await userTurn(text);
-          else provider.post({ type: "presence", state: "idle", label: "listening for you" });
-        } catch (e: any) {
-          provider.post({ type: "banner", kind: "err", html: "Transcription failed: " + (e?.message || e) });
-        }
+        const key = await requireKey(); if (!key || !session) break;
+        await withBusy(async () => {
+          provider.post({ type: "presence", state: "thinking", label: "transcribing…" });
+          try {
+            const text = await transcribe(key, settings().transcribeModel, new Uint8Array(m.bytes), m.mime);
+            if (text) await userTurn(text);
+            else provider.post({ type: "presence", state: "idle", label: "listening for you" });
+          } catch (e: any) {
+            provider.post({ type: "banner", kind: "err", html: "Transcription failed: " + (e?.message || e) });
+          }
+        });
         break;
       }
-      case "hint": if (session) await runAssistantTurn([...session.messages(), { role: "user", content: HINT_INSTRUCTION }]); break;
-      case "shareCode": if (session && solutionDoc) await userTurn("Here's my current code — what do you think?"); break;
+      case "hint": if (session) await withBusy(() => runAssistantTurn([...session!.messages(), { role: "user", content: HINT_INSTRUCTION }])); break;
+      case "shareCode": if (session && solutionDoc) await withBusy(() => userTurn("Here's my current code — what do you think?")); break;
       case "endInterview":
         if (session) {
-          await runAssistantTurn([...session.messages(), { role: "user", content: FEEDBACK_INSTRUCTION }]);
+          await withBusy(() => runAssistantTurn([...session!.messages(), { role: "user", content: FEEDBACK_INSTRUCTION }]));
           session = undefined; solutionDoc = undefined;
           provider.post({ type: "endAfterSpeech" });
         } else {
