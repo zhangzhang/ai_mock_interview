@@ -14,15 +14,15 @@ A VS Code extension for voice-driven mock coding interviews. Practice your codin
 
 ### Open the Interview Panel
 
-Click the **🟠 Onsite** button in the status bar (bottom-left corner) to open the Interview panel. The panel also appears as a tab in the bottom panel next to Terminal.
+Click the **Onsite** item in the status bar (with a speech-bubble icon) to open the Interview panel. The panel also appears as a tab in the bottom panel next to Terminal.
 
 ### Configure Settings
 
 1. In the Interview panel, click the **⚙ Settings** button.
 2. Paste your [OpenAI API key](https://platform.openai.com/api-keys) (stored securely in VS Code's SecretStorage).
 3. Choose your preferred:
-   - **Model** (e.g., `gpt-4o` or `gpt-4-turbo`)
-   - **Voice** (e.g., `alloy`, `nova`)
+   - **Model** (one of: `gpt-5.6` [default], `gpt-5.5`, `gpt-5`, `gpt-5-mini`, `gpt-5-nano`)
+   - **Voice** (one of: `alloy`, `ash`, `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`, `cedar`)
    - **Speech speed** (e.g., 1.0x)
    - **Interviewer name** and **pronoun** (Sam and she/her by default)
 4. Click **Save**.
@@ -48,7 +48,7 @@ During the interview, you can:
 
 ### About Solution.java
 
-`Solution.java` is an untitled file with real Java syntax highlighting and basic completion. For full IntelliSense (method signatures, imports, diagnostics), save it into a Java project structure (e.g., a folder with a `src/` subdirectory or a Maven/Gradle project).
+`Solution.java` is an untitled file with real Java syntax highlighting. For full IntelliSense and completion (method signatures, imports, diagnostics), save it into a Java project structure (e.g., a folder with a `src/` subdirectory or a Maven/Gradle project) or install a Java language extension.
 
 ## Development
 
@@ -65,11 +65,11 @@ npm install
 npm run watch
 ```
 
-This compiles the TypeScript and media files in watch mode. Keep this terminal open during development.
+This rebuilds `out/extension.js` in watch mode whenever you edit `src/extension.ts`. Keep this terminal open during development.
 
 ### Run the Extension
 
-Press **F5** to launch the Extension Development Host with your extension active. Any changes made while watch mode is running will hot-reload.
+Press **F5** to launch the Extension Development Host with your extension active. After the build completes in watch mode, reload the Extension Development Host window to pick up changes (Command Palette → "Developer: Reload Window", or Ctrl+R / Cmd+R in the Extension Development Host window).
 
 ### Run Tests
 
@@ -90,7 +90,7 @@ This compiles the extension and packages it as `onsite-interview-0.1.0.vsix`, re
 ## Manual Test Checklist
 
 1. F5 → Extension Development Host opens.
-2. Click status-bar **🟠 Onsite** → the Interview panel appears in the bottom Panel.
+2. Click the status-bar **Onsite** item (with a speech-bubble icon) → the Interview panel appears in the bottom Panel.
 3. Click **⚙ Settings** → paste a real OpenAI key → Save. Reopen Settings → the note says a key is saved.
 4. Pick a problem → **Start interview** → `Solution.java` opens in column 1, the problem preview opens beside it, Sam greets you (text + voice).
 5. Type a message → Sam replies in text and voice; the mic re-arms.
