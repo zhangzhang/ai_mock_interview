@@ -118,7 +118,7 @@ export function activate(context: vscode.ExtensionContext): void {
       session!.pushAssistant(reply);
       provider.post({ type: "samBubble", text: reply });
       await speak(reply, s);
-      provider.post({ type: "presence", state: "idle", label: "listening for you" });
+      provider.post({ type: "presence", state: "idle", label: "your turn — type below" });
     } catch (e: any) {
       provider.post({ type: "banner", kind: "err", html: "Couldn't reach OpenAI: " + (e?.message || e) });
       provider.post({ type: "presence", state: "idle", label: "idle" });
@@ -160,7 +160,7 @@ export function activate(context: vscode.ExtensionContext): void {
             const text = await transcribe(key, settings().transcribeModel, new Uint8Array(m.bytes), m.mime);
             logLine(text ? `Transcribed: "${text}"` : "Transcription returned empty text");
             if (text) await userTurn(text);
-            else provider.post({ type: "presence", state: "idle", label: "listening for you" });
+            else provider.post({ type: "presence", state: "idle", label: "your turn — type below" });
           } catch (e: any) {
             logLine(`Transcription FAILED: ${e?.message || e}`);
             provider.post({ type: "banner", kind: "err", html: "Transcription failed: " + (e?.message || e) });

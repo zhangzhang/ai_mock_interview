@@ -39,8 +39,8 @@ Click the **Onsite** item in the status bar (with a speech-bubble icon) to open 
 
 During the interview, you can:
 
-- **Talk**: Click the **🎤** button and speak. The extension uses adaptive pause detection to know when you're done. Sam transcribes your speech and responds in text and voice.
-- **Type**: Type a message in the text box and press **Send** (or Enter).
+- **Type**: Type a message in the text box and press **Send** (or Enter). Sam replies in text **and speaks aloud** (voice output works fully).
+- **Talk** *(limited)*: A **🎤** button exists, but **microphone input does not work inside VS Code** — VS Code webviews block mic access at the platform level ([microsoft/vscode#250568](https://github.com/microsoft/vscode/issues/250568)), so clicking it shows an explanatory notice. Use typing for now; Sam still responds by voice.
 - **Share code**: Click **Share code** to send your current `Solution.java` for Sam's feedback.
 - **Request a hint**: Click **Hint** to get help from Sam.
 - **End & feedback**: Click **End & feedback** to wrap up the interview. Sam provides final feedback, then returns to the home state.
@@ -93,8 +93,8 @@ This compiles the extension and packages it as `onsite-interview-0.1.0.vsix`, re
 2. Click the status-bar **Onsite** item (with a speech-bubble icon) → the Interview panel appears in the bottom Panel.
 3. Click **⚙ Settings** → paste a real OpenAI key → Save. Reopen Settings → the note says a key is saved.
 4. Pick a problem → **Start interview** → `Solution.java` opens in column 1, the problem preview opens beside it, Sam greets you (text + voice).
-5. Type a message → Sam replies in text and voice; the mic re-arms.
-6. Click **🎤**, speak, pause → it transcribes, sends, Sam replies.
+5. Type a message → Sam replies in text and speaks aloud.
+6. Click **🎤** → an explanatory notice appears (mic input is blocked by VS Code's webview; type instead).
 7. **Share code**, **Hint**, **End & feedback** each work; End returns to the home state.
 8. Reload the window → settings persist; the key is still saved.
 

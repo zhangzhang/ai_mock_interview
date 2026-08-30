@@ -21,7 +21,11 @@ button.secondary { background: var(--vscode-button-secondaryBackground);
 .banner { margin: 6px 12px; padding: 8px 10px; border-radius: 6px;
   background: var(--vscode-inputValidation-warningBackground);
   border: 1px solid var(--vscode-inputValidation-warningBorder); }
-.talkbar { display: flex; gap: 6px; align-items: center; padding: 8px 12px;
-  border-top: 1px solid var(--vscode-panel-border); }
-.talkbar input { flex: 1; }
+/* Input on its own full-width row, buttons wrap below — stays usable in a short
+   or narrow bottom panel where a single row would squeeze the field to nothing. */
+.talkbar { display: flex; flex-direction: column; gap: 6px; padding: 8px 12px;
+  border-top: 1px solid var(--vscode-panel-border); flex: 0 0 auto; }
+.talkbar input { width: 100%; box-sizing: border-box;
+  border: 1px solid var(--vscode-input-border, var(--vscode-panel-border)); }
+.talkbar-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
 #mic.rec { background: var(--vscode-charts-red, red); color: #fff; }

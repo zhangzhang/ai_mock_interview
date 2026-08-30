@@ -22,13 +22,15 @@
     <div class="banner" id="banner" hidden></div>
     <div class="transcript" id="transcript"></div>
     <div class="talkbar">
-      <button id="mic" title="Talk">🎤</button>
-      <input id="textInput" placeholder="Talk out loud — or type here">
-      <button id="sendBtn">Send</button>
-      <button id="shareBtn">Share code</button>
-      <button id="hintBtn">Hint</button>
-      <button id="endBtn">End &amp; feedback</button>
-      <button id="muteBtn" title="Mute">🔊</button>
+      <input id="textInput" placeholder="Type your answer, then press Enter or Send…">
+      <div class="talkbar-buttons">
+        <button id="sendBtn">Send</button>
+        <button id="mic" title="Talk (voice input is unavailable inside VS Code)">🎤</button>
+        <button id="shareBtn">Share code</button>
+        <button id="hintBtn">Hint</button>
+        <button id="endBtn">End &amp; feedback</button>
+        <button id="muteBtn" title="Mute">🔊</button>
+      </div>
     </div>
   </section>
   <script nonce="{{nonce}}" type="module">{{endpointingJs}}

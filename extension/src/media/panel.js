@@ -31,11 +31,9 @@ function renderProblems(groups) {
   }
 }
 $("startBtn").onclick = () => {
-  // Enable hands-free voice for this interview and prime the mic permission NOW,
-  // while we still have the click's user gesture — otherwise the auto-arm after
-  // the greeting (which happens seconds later) can't prompt for the mic.
-  handsFree = true;
-  ensureMic();
+  // Note: we do NOT auto-arm the mic. VS Code webviews block microphone access
+  // (Permissions-Policy), so getUserMedia always fails here — auto-arming would
+  // just spam a failure banner. The 🎤 button still lets the user try and see why.
   vscode.postMessage({ type: "startInterview", problemId: $("problemSelect").value });
 };
 $("settingsBtn").onclick = () => vscode.postMessage({ type: "openSettings" });
@@ -96,7 +94,7 @@ async function ensureMic() {
   } catch (e) {
     handsFree = false; // stop auto-retrying getUserMedia (avoids repeated prompts)
     $("banner").hidden = false;
-    $("banner").textContent = "Mic unavailable (" + ((e && e.name) || "denied") + ") — type your answers instead.";
+    $("banner").innerHTML = "<b>Voice input isn't available inside VS Code.</b> Its webview blocks microphone access (a VS Code limitation, not your mic) — type your answers below. Sam still speaks aloud.";
     return false;
   }
 }
