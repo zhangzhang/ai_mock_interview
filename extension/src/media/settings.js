@@ -28,6 +28,48 @@ $("save").onclick = () => {
   vscode.postMessage({ type: "save", settings: collect(), key: key || undefined });
   $("apiKey").value = "";
 };
-$("test").onclick = () => vscode.postMessage({ type: "testVoice", settings: collect() });
-window.addEventListener("message", (ev) => { if (ev.data.type === "init") apply(ev.data.settings, ev.data.keyIsSet); });
+let testAudio = null;
+function resetTestBtn() { $("test").disabled = false; $("test").textContent = "Test voice"; }
+function stopTest() {
+  if (testAudio) { try { testAudio.pause(); } catch (e) {} testAudio = null; }
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+}
+$("test").onclick = () => {
+  stopTest();
+  $("test").disabled = true;
+  $("test").textContent = "Generating…";
+  vscode.postMessage({ type: "testVoice", settings: collect() });
+};
+// The host synthesizes and sends the audio back here so playback happens in this
+// page — where the click's user gesture lives (autoplay allowed) and independent
+// of whether the interview panel is open.
+function playTest(result) {
+  if (result.kind === "audio") {
+    $("test").textContent = "Playing…";
+    const bin = atob(result.b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    const url = URL.createObjectURL(new Blob([arr], { type: "audio/mpeg" }));
+    testAudio = new Audio(url);
+    testAudio.onended = () => { URL.revokeObjectURL(url); testAudio = null; resetTestBtn(); };
+    testAudio.onerror = () => { URL.revokeObjectURL(url); testAudio = null; resetTestBtn(); };
+    testAudio.play().catch(() => resetTestBtn());
+  } else if (result.kind === "browser") {
+    if ("speechSynthesis" in window) {
+      const u = new SpeechSynthesisUtterance(result.text);
+      u.rate = result.rate || 1; u.onend = resetTestBtn; u.onerror = resetTestBtn;
+      $("test").textContent = "Playing…";
+      speechSynthesis.speak(u);
+    } else { resetTestBtn(); }
+  } else {
+    $("test").textContent = "Failed";
+    $("keyNote").textContent = "Test voice failed: " + (result.message || "unknown error");
+    setTimeout(resetTestBtn, 1500);
+  }
+}
+window.addEventListener("message", (ev) => {
+  const m = ev.data;
+  if (m.type === "init") apply(m.settings, m.keyIsSet);
+  else if (m.type === "testResult") playTest(m.result);
+});
 vscode.postMessage({ type: "ready" });

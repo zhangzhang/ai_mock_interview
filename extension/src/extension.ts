@@ -11,6 +11,10 @@ import { GREETING_HINT, HINT_INSTRUCTION, FEEDBACK_INSTRUCTION } from "./prompt.
 export function activate(context: vscode.ExtensionContext): void {
   registerProblemScheme(context);
 
+  const log = vscode.window.createOutputChannel("Onsite");
+  context.subscriptions.push(log);
+  const logLine = (m: string) => log.appendLine(`[${new Date().toISOString().substring(11, 23)}] ${m}`);
+
   const provider = new SamViewProvider(context);
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider("onsite.samView", provider, { webviewOptions: { retainContextWhenHidden: true } })
@@ -67,18 +71,35 @@ export function activate(context: vscode.ExtensionContext): void {
     try { k = await getKey(context.secrets); } catch { /* keychain unavailable */ }
     openSettingsPage(context, settings(), !!k, {
       save: async (patch, key) => { await setSettings(context.globalState, patch); if (key !== undefined) await setKey(context.secrets, key); sendSettings(); },
-      testVoice: async (s) => { await speak("Hi, I'm " + s.interviewerName + ". Let's begin when you're ready.", s); },
+      testVoice: async (s) => {
+        const text = "Hi, I'm " + s.interviewerName + ". Let's begin when you're ready.";
+        if (s.voiceMode === "browser") return { kind: "browser", text, rate: s.speechRate };
+        const key = await getKey(context.secrets);
+        if (!key) { logLine("Test voice: no API key saved"); return { kind: "error", message: "No OpenAI API key saved — enter one and Save first." }; }
+        const t0 = Date.now();
+        try {
+          const bytes = await synthesizeSpeech(key, s.ttsModel, s.voice, text, s.speechRate);
+          logLine(`Test voice ok: ${s.ttsModel}/${s.voice} → ${bytes.length} bytes in ${Date.now() - t0}ms`);
+          return { kind: "audio", b64: Buffer.from(bytes).toString("base64") };
+        } catch (e: any) {
+          logLine(`Test voice FAILED: ${s.ttsModel}/${s.voice} after ${Date.now() - t0}ms: ${e?.message || e}`);
+          return { kind: "error", message: String(e?.message || e) };
+        }
+      },
     });
   }
 
   async function speak(text: string, s: Settings): Promise<void> {
     if (s.voiceMode === "browser") { provider.post({ type: "speakBrowser", text, rate: s.speechRate }); return; }
     const key = await getKey(context.secrets);
-    if (!key) return;
+    if (!key) { logLine("speak: no API key — skipping neural voice"); return; }
     try {
       const bytes = await synthesizeSpeech(key, s.ttsModel, s.voice, text, s.speechRate);
       provider.post({ type: "tts", bytes: Array.from(bytes) });
-    } catch { provider.post({ type: "speakBrowser", text, rate: s.speechRate }); }
+    } catch (e: any) {
+      logLine(`Neural TTS failed (${s.ttsModel}/${s.voice}): ${e?.message || e} — falling back to browser voice`);
+      provider.post({ type: "speakBrowser", text, rate: s.speechRate });
+    }
   }
 
   async function runAssistantTurn(sendMessages: Parameters<typeof chatCompletion>[2]): Promise<void> {
