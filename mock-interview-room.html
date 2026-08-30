@@ -78,6 +78,7 @@
   .chip.medium{background:var(--amber-soft);color:var(--amber-2)}
   .chip.hard{background:rgba(229,115,94,.16);color:var(--red)}
   .chip.pattern{background:var(--panel-2);color:var(--muted)}
+  .chip.company{background:rgba(242,166,59,.18);color:var(--amber-2);border:1px solid rgba(242,166,59,.4)}
   .problem .body{margin-top:20px;font-size:14.5px;line-height:1.62;color:var(--text)}
   .problem .body p{margin:0 0 14px}
   .problem .body strong{color:var(--text)}
@@ -477,7 +478,97 @@ const STARTERS = {
   "number-of-1-bits": sol("public int hammingWeight(int n)"),
   "counting-bits": sol("public int[] countBits(int n)"),
   "missing-number": sol("public int missingNumber(int[] nums)"),
-  "reverse-bits": sol("public int reverseBits(int n)")
+  "reverse-bits": sol("public int reverseBits(int n)"),
+  // ---- additional (Amazon set) ----
+  "majority-element": sol("public int majorityElement(int[] nums)"),
+  "check-if-array-is-sorted-and-rotated": sol("public boolean check(int[] nums)"),
+  "concatenation-of-array": sol("public int[] getConcatenation(int[] nums)"),
+  "longest-consecutive-sequence": sol("public int longestConsecutive(int[] nums)"),
+  "ransom-note": sol("public boolean canConstruct(String ransomNote, String magazine)"),
+  "longest-common-prefix": sol("public String longestCommonPrefix(String[] strs)"),
+  "isomorphic-strings": sol("public boolean isIsomorphic(String s, String t)"),
+  "smallest-missing-integer-greater-than-sequential-prefix-sum": sol("public int missingInteger(int[] nums)"),
+  "find-all-duplicates-in-an-array": sol("public List<Integer> findDuplicates(int[] nums)"),
+  "row-with-maximum-ones": sol("public int[] rowAndMaximumOnes(int[][] mat)"),
+  "majority-element-ii": sol("public List<Integer> majorityElement(int[] nums)"),
+  "valid-sudoku": sol("public boolean isValidSudoku(char[][] board)"),
+  "subarray-sum-equals-k": sol("public int subarraySum(int[] nums, int k)"),
+  "contiguous-array": sol("public int findMaxLength(int[] nums)"),
+  "next-permutation": sol("public void nextPermutation(int[] nums)"),
+  "count-and-say": sol("public String countAndSay(int n)"),
+  "range-sum-query-immutable": "class NumArray {\n    public NumArray(int[] nums) {\n        \n    }\n    public int sumRange(int left, int right) {\n        \n    }\n}",
+  "sort-colors": sol("public void sortColors(int[] nums)"),
+  "remove-duplicates-from-sorted-array": sol("public int removeDuplicates(int[] nums)"),
+  "merge-sorted-array": sol("public void merge(int[] nums1, int m, int[] nums2, int n)"),
+  "remove-element": sol("public int removeElement(int[] nums, int val)"),
+  "find-the-index-of-the-first-occurrence-in-a-string": sol("public int strStr(String haystack, String needle)"),
+  "is-subsequence": sol("public boolean isSubsequence(String s, String t)"),
+  "number-of-subsequences-that-satisfy-the-given-sum-condition": sol("public int numSubseq(int[] nums, int target)"),
+  "fruit-into-baskets": sol("public int totalFruit(int[] fruits)"),
+  "sliding-window-maximum": sol("public int[] maxSlidingWindow(int[] nums, int k)"),
+  "maximum-average-subarray-i": sol("public double findMaxAverage(int[] nums, int k)"),
+  "shortest-subarray-with-sum-at-least-k": sol("public int shortestSubarray(int[] nums, int k)"),
+  "maximum-points-you-can-obtain-from-cards": sol("public int maxScore(int[] cardPoints, int k)"),
+  "longest-substring-with-at-least-k-repeating-characters": sol("public int longestSubstring(String s, int k)"),
+  "frequency-of-the-most-frequent-element": sol("public int maxFrequency(int[] nums, int k)"),
+  "find-all-anagrams-in-a-string": sol("public List<Integer> findAnagrams(String s, String p)"),
+  "length-of-longest-subarray-with-at-most-k-frequency": sol("public int maxSubarrayLength(int[] nums, int k)"),
+  "maximum-length-substring-with-two-occurrences": sol("public int maximumLengthSubstring(String s)"),
+  "grumpy-bookstore-owner": sol("public int maxSatisfied(int[] customers, int[] grumpy, int minutes)"),
+  "minimum-swaps-to-group-all-1s-together-ii": sol("public int minSwaps(int[] nums)"),
+  "maximum-white-tiles-covered-by-a-carpet": sol("public int maximumWhiteTiles(int[][] tiles, int carpetLen)"),
+  "split-array-largest-sum": sol("public int splitArray(int[] nums, int k)"),
+  "capacity-to-ship-packages-within-d-days": sol("public int shipWithinDays(int[] weights, int days)"),
+  "single-element-in-a-sorted-array": sol("public int singleNonDuplicate(int[] nums)"),
+  "search-insert-position": sol("public int searchInsert(int[] nums, int target)"),
+  "find-first-and-last-position-of-element-in-sorted-array": sol("public int[] searchRange(int[] nums, int target)"),
+  "sqrtx": sol("public int mySqrt(int x)"),
+  "peak-index-in-a-mountain-array": sol("public int peakIndexInMountainArray(int[] arr)"),
+  "minimum-cost-to-make-array-equal": sol("public long minCost(int[] nums, int[] cost)"),
+  "reverse-pairs": sol("public int reversePairs(int[] nums)"),
+  "asteroid-collision": sol("public int[] asteroidCollision(int[] asteroids)"),
+  "next-greater-element-ii": sol("public int[] nextGreaterElements(int[] nums)"),
+  "next-greater-element-i": sol("public int[] nextGreaterElement(int[] nums1, int[] nums2)"),
+  "sum-of-subarray-minimums": sol("public int sumSubarrayMins(int[] arr)"),
+  "remove-outermost-parentheses": sol("public String removeOuterParentheses(String s)"),
+  "flatten-nested-list-iterator": "// NestedInteger: isInteger() / getInteger() / getList()\nclass NestedIterator implements Iterator<Integer> {\n    public NestedIterator(List<NestedInteger> nestedList) {\n        \n    }\n    public Integer next() {\n        \n    }\n    public boolean hasNext() {\n        \n    }\n}",
+  "add-two-numbers": solNode(LN, "public ListNode addTwoNumbers(ListNode l1, ListNode l2)"),
+  "copy-list-with-random-pointer": solNode("Node { int val; Node next; Node random; }", "public Node copyRandomList(Node head)"),
+  "reverse-nodes-in-k-group": solNode(LN, "public ListNode reverseKGroup(ListNode head, int k)"),
+  "odd-even-linked-list": solNode(LN, "public ListNode oddEvenList(ListNode head)"),
+  "house-robber-iii": solNode(TN, "public int rob(TreeNode root)"),
+  "lowest-common-ancestor-of-a-binary-tree": solNode(TN, "public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q)"),
+  "maximum-width-of-binary-tree": solNode(TN, "public int widthOfBinaryTree(TreeNode root)"),
+  "path-sum-ii": solNode(TN, "public List<List<Integer>> pathSum(TreeNode root, int targetSum)"),
+  "recover-binary-search-tree": solNode(TN, "public void recoverTree(TreeNode root)"),
+  "binary-tree-preorder-traversal": solNode(TN, "public List<Integer> preorderTraversal(TreeNode root)"),
+  "reorganize-string": sol("public String reorganizeString(String s)"),
+  "top-k-frequent-words": sol("public List<String> topKFrequent(String[] words, int k)"),
+  "evaluate-division": sol("public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries)"),
+  "01-matrix": sol("public int[][] updateMatrix(int[][] mat)"),
+  "max-area-of-island": sol("public int maxAreaOfIsland(int[][] grid)"),
+  "cheapest-flights-within-k-stops": sol("public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k)"),
+  "minimum-cost-to-make-at-least-one-valid-path-in-a-grid": sol("public int minCost(int[][] grid)"),
+  "car-pooling": sol("public boolean carPooling(int[][] trips, int capacity)"),
+  "candy": sol("public int candy(int[] ratings)"),
+  "separate-black-and-white-balls": sol("public long minimumSteps(String s)"),
+  "stone-game-ix": sol("public boolean stoneGameIX(int[] stones)"),
+  "sum-game": sol("public boolean sumGame(String num)"),
+  "predict-the-winner": sol("public boolean predictTheWinner(int[] nums)"),
+  "stone-game-ii": sol("public int stoneGameII(int[] piles)"),
+  "interleaving-string": sol("public boolean isInterleave(String s1, String s2, String s3)"),
+  "pascals-triangle": sol("public List<List<Integer>> generate(int numRows)"),
+  "best-time-to-buy-and-sell-stock-iii": sol("public int maxProfit(int[] prices)"),
+  "cherry-pickup-ii": sol("public int cherryPickup(int[][] grid)"),
+  "delete-and-earn": sol("public int deleteAndEarn(int[] nums)"),
+  "minimum-difficulty-of-a-job-schedule": sol("public int minDifficulty(int[] jobDifficulty, int d)"),
+  "palindrome-number": sol("public boolean isPalindrome(int x)"),
+  "reverse-integer": sol("public int reverse(int x)"),
+  "roman-to-integer": sol("public int romanToInt(String s)"),
+  "integer-to-roman": sol("public String intToRoman(int num)"),
+  "happy-number": sol("public boolean isHappy(int n)"),
+  "powx-n": sol("public double myPow(double x, int n)"),
+  "find-the-closest-palindrome": sol("public String nearestPalindromic(String n)")
 };
 function P(num, diff, pattern, slug, title, desc, ex, con){
   const url = "https://leetcode.com/problems/"+slug+"/";
@@ -598,8 +689,150 @@ const PROBLEMS = [
   P(191,"easy","Bit Manipulation / Math","number-of-1-bits","Number of 1 Bits",`Return the number of set bits (population count) in an unsigned integer.`,`n = 11 (binary 1011) -> 3`,``),
   P(338,"easy","Bit Manipulation / Math","counting-bits","Counting Bits",`Return an array where result[i] is the number of set bits in i, for every i from 0 to n.`,`n = 5 -> [0,1,1,2,1,2]`,``),
   P(268,"easy","Bit Manipulation / Math","missing-number","Missing Number",`The array holds n distinct numbers drawn from 0..n. Return the one number in that range that is missing.`,`[3,0,1] -> 2\n[0,1] -> 2`,``),
-  P(190,"easy","Bit Manipulation / Math","reverse-bits","Reverse Bits",`Reverse the 32 bits of an unsigned integer and return the result.`,`n = 43261596 -> 964176192   (bit pattern reversed)`,``)
+  P(190,"easy","Bit Manipulation / Math","reverse-bits","Reverse Bits",`Reverse the 32 bits of an unsigned integer and return the result.`,`n = 43261596 -> 964176192   (bit pattern reversed)`,``),
+
+  // ================= Amazon set — additional problems =================
+  // ---- Arrays & Hashing ----
+  P(169,"easy","Arrays & Hashing","majority-element","Majority Element",`Return the element that appears more than n/2 times (it is guaranteed to exist).`,`[2,2,1,1,1,2,2] -> 2`,``),
+  P(1752,"easy","Arrays & Hashing","check-if-array-is-sorted-and-rotated","Check if Array Is Sorted and Rotated",`Return true if the array can be obtained by rotating a non-decreasing array some number of positions (0 allowed).`,`[3,4,5,1,2] -> true`,``),
+  P(1929,"easy","Arrays & Hashing","concatenation-of-array","Concatenation of Array",`Return the length-2n array formed by appending the array to itself.`,`[1,2,1] -> [1,2,1,1,2,1]`,``),
+  P(128,"medium","Arrays & Hashing","longest-consecutive-sequence","Longest Consecutive Sequence",`Return the length of the longest run of consecutive integers in the array, in O(n).`,`[100,4,200,1,3,2] -> 4   (1,2,3,4)`,``),
+  P(383,"easy","Arrays & Hashing","ransom-note","Ransom Note",`Return true if the ransom note can be built using each letter of the magazine at most once.`,`note = "aa", magazine = "aab" -> true`,``),
+  P(14,"easy","Arrays & Hashing","longest-common-prefix","Longest Common Prefix",`Return the longest string that is a prefix of every string in the array ("" if none).`,`["flower","flow","flight"] -> "fl"`,``),
+  P(205,"easy","Arrays & Hashing","isomorphic-strings","Isomorphic Strings",`Return true if characters of s can be consistently replaced one-to-one to get t, preserving order.`,`s = "egg", t = "add" -> true`,``),
+  P(2996,"easy","Arrays & Hashing","smallest-missing-integer-greater-than-sequential-prefix-sum","Smallest Missing Integer Greater Than Sequential Prefix Sum",`Sum the longest prefix where each element is exactly one more than the previous; return the smallest integer >= that sum that is not present in the array.`,`[1,2,3,2,5] -> 6   (prefix 1,2,3 sums to 6)`,``),
+  P(442,"medium","Arrays & Hashing","find-all-duplicates-in-an-array","Find All Duplicates in an Array",`Values lie in [1,n]; return all that appear exactly twice, using O(1) extra space.`,`[4,3,2,7,8,2,3,1] -> [2,3]`,``),
+  P(2643,"easy","Arrays & Hashing","row-with-maximum-ones","Row With Maximum Ones",`Return [rowIndex, count] for the binary-matrix row with the most 1s (smallest index breaks ties).`,`[[0,1],[1,0]] -> [0,1]`,``),
+  P(229,"medium","Arrays & Hashing","majority-element-ii","Majority Element II",`Return every element that appears more than n/3 times.`,`[3,2,3] -> [3]`,``),
+  P(36,"medium","Arrays & Hashing","valid-sudoku","Valid Sudoku",`Return true if the filled cells of a 9x9 board break no Sudoku rule (no repeat in a row, column, or 3x3 box). '.' is empty.`,`a board with no conflicts -> true`,``),
+  P(560,"medium","Arrays & Hashing","subarray-sum-equals-k","Subarray Sum Equals K",`Return the number of contiguous subarrays whose elements sum to k.`,`[1,1,1], k = 2 -> 2`,``),
+  P(525,"medium","Arrays & Hashing","contiguous-array","Contiguous Array",`Return the length of the longest contiguous subarray with equal counts of 0s and 1s.`,`[0,1,0] -> 2`,``),
+  P(31,"medium","Arrays & Hashing","next-permutation","Next Permutation",`Rearrange the numbers, in place, into the next lexicographically greater permutation; if none exists, sort ascending.`,`[1,2,3] -> [1,3,2]`,``),
+  P(38,"medium","Arrays & Hashing","count-and-say","Count and Say",`Build term n by reading the previous term as groups of equal digits, saying count then digit.`,`n = 4 -> "1211"   (1 -> 11 -> 21 -> 1211)`,``),
+  P(303,"easy","Arrays & Hashing","range-sum-query-immutable","Range Sum Query - Immutable",`Design a structure over a fixed array that answers the inclusive sum of any range in O(1) using a prefix-sum.`,`sumRange(0,2) on [-2,0,3,-5,2,-1] -> 1`,``),
+  // ---- Two Pointers ----
+  P(75,"medium","Two Pointers","sort-colors","Sort Colors",`Sort an array of 0s, 1s, and 2s in place in a single pass (Dutch national flag).`,`[2,0,2,1,1,0] -> [0,0,1,1,2,2]`,``),
+  P(26,"easy","Two Pointers","remove-duplicates-from-sorted-array","Remove Duplicates from Sorted Array",`Remove duplicates from a sorted array in place; return the count k of unique values kept in the first k slots.`,`[1,1,2] -> 2, nums starts [1,2,...]`,``),
+  P(88,"easy","Two Pointers","merge-sorted-array","Merge Sorted Array",`Merge nums2 into nums1 in place; nums1 has length m+n with its last n slots reserved as buffer.`,`nums1=[1,2,3,0,0,0], m=3, nums2=[2,5,6], n=3 -> [1,2,2,3,5,6]`,``),
+  P(27,"easy","Two Pointers","remove-element","Remove Element",`Remove all occurrences of val in place; return the new length (remaining order may change).`,`[3,2,2,3], val = 3 -> 2, nums starts [2,2,...]`,``),
+  P(28,"easy","Two Pointers","find-the-index-of-the-first-occurrence-in-a-string","Find the Index of the First Occurrence in a String",`Return the index of the first occurrence of needle in haystack, or -1.`,`haystack = "sadbutsad", needle = "sad" -> 0`,``),
+  P(392,"easy","Two Pointers","is-subsequence","Is Subsequence",`Return true if s is a subsequence of t (keep order, characters may be skipped).`,`s = "abc", t = "ahbgdc" -> true`,``),
+  P(1498,"medium","Two Pointers","number-of-subsequences-that-satisfy-the-given-sum-condition","Number of Subsequences That Satisfy the Given Sum Condition",`Count non-empty subsequences whose minimum plus maximum is <= target, modulo 1e9+7.`,`nums = [3,5,6,7], target = 9 -> 4`,``),
+  // ---- Sliding Window ----
+  P(904,"medium","Sliding Window","fruit-into-baskets","Fruit Into Baskets",`Two baskets each hold one fruit type; return the most fruit collectable from a contiguous run (longest subarray with at most 2 distinct values).`,`[1,2,1] -> 3`,``),
+  P(239,"hard","Sliding Window","sliding-window-maximum","Sliding Window Maximum",`Return the maximum of each contiguous window of size k as it slides across the array.`,`[1,3,-1,-3,5,3,6,7], k = 3 -> [3,3,5,5,6,7]`,``),
+  P(643,"easy","Sliding Window","maximum-average-subarray-i","Maximum Average Subarray I",`Return the maximum average of any contiguous subarray of length k.`,`[1,12,-5,-6,50,3], k = 4 -> 12.75`,``),
+  P(862,"hard","Sliding Window","shortest-subarray-with-sum-at-least-k","Shortest Subarray with Sum at Least K",`Return the length of the shortest contiguous subarray with sum >= k (values may be negative), or -1.`,`[2,-1,2], k = 3 -> 3`,``),
+  P(1423,"medium","Sliding Window","maximum-points-you-can-obtain-from-cards","Maximum Points You Can Obtain from Cards",`Take exactly k cards from either end of the row; return the maximum total points.`,`[1,2,3,4,5,6,1], k = 3 -> 12`,``),
+  P(395,"medium","Sliding Window","longest-substring-with-at-least-k-repeating-characters","Longest Substring with At Least K Repeating Characters",`Return the length of the longest substring in which every distinct character appears at least k times.`,`s = "aaabb", k = 3 -> 3   ("aaa")`,``),
+  P(1838,"medium","Sliding Window","frequency-of-the-most-frequent-element","Frequency of the Most Frequent Element",`You may add 1 to elements at most k times total; return the highest frequency any single value can reach.`,`[1,2,4], k = 5 -> 3`,``),
+  P(438,"medium","Sliding Window","find-all-anagrams-in-a-string","Find All Anagrams in a String",`Return the start indices of every substring of s that is an anagram of p.`,`s = "cbaebabacd", p = "abc" -> [0,6]`,``),
+  P(2958,"medium","Sliding Window","length-of-longest-subarray-with-at-most-k-frequency","Length of Longest Subarray With at Most K Frequency",`Return the longest contiguous subarray in which no value occurs more than k times.`,`[1,2,3,1,2,3,1,2], k = 2 -> 6`,``),
+  P(3090,"easy","Sliding Window","maximum-length-substring-with-two-occurrences","Maximum Length Substring With Two Occurrences",`Return the length of the longest substring in which each character appears at most twice.`,`"bcbbbcba" -> 4`,``),
+  P(1052,"medium","Sliding Window","grumpy-bookstore-owner","Grumpy Bookstore Owner",`The owner is grumpy in some minutes (those customers go unsatisfied). Using one calm streak of the given length, maximize satisfied customers.`,`customers=[1,0,1,2,1,1,7,5], grumpy=[0,1,0,1,0,1,0,1], minutes=3 -> 16`,``),
+  P(2134,"medium","Sliding Window","minimum-swaps-to-group-all-1s-together-ii","Minimum Swaps to Group All 1's Together II",`The array is circular; return the minimum adjacent-independent swaps to gather all 1s into one contiguous block.`,`[0,1,0,1,1,0,0] -> 1`,``),
+  P(2271,"medium","Sliding Window","maximum-white-tiles-covered-by-a-carpet","Maximum White Tiles Covered by a Carpet",`Given ranges of white tiles and a carpet of fixed length, return the maximum white tiles it can cover in one placement.`,`tiles=[[1,5],[10,11],[12,18],[20,25],[30,32]], carpetLen=10 -> 9`,``),
+  // ---- Binary Search ----
+  P(410,"hard","Binary Search","split-array-largest-sum","Split Array Largest Sum",`Split the array into k non-empty contiguous parts; minimize the largest part's sum.`,`[7,2,5,10,8], k = 2 -> 18`,``),
+  P(1011,"medium","Binary Search","capacity-to-ship-packages-within-d-days","Capacity To Ship Packages Within D Days",`Ship packages in order within the given number of days; return the least ship capacity that suffices.`,`weights=[1,2,3,4,5,6,7,8,9,10], days=5 -> 15`,``),
+  P(540,"medium","Binary Search","single-element-in-a-sorted-array","Single Element in a Sorted Array",`Every value appears twice except one; find that value in O(log n).`,`[1,1,2,3,3,4,4,8,8] -> 2`,``),
+  P(35,"easy","Binary Search","search-insert-position","Search Insert Position",`Return the index of target, or the index where it would be inserted to keep the array sorted.`,`[1,3,5,6], target = 5 -> 2`,``),
+  P(34,"medium","Binary Search","find-first-and-last-position-of-element-in-sorted-array","Find First and Last Position of Element in Sorted Array",`Return the first and last index of target in the sorted array, or [-1,-1].`,`[5,7,7,8,8,10], target = 8 -> [3,4]`,``),
+  P(69,"easy","Binary Search","sqrtx","Sqrt(x)",`Return the integer square root of x (floor of the true square root).`,`x = 8 -> 2`,``),
+  P(852,"medium","Binary Search","peak-index-in-a-mountain-array","Peak Index in a Mountain Array",`The array strictly rises then strictly falls; return the peak index in O(log n).`,`[0,2,1,0] -> 1`,``),
+  P(2448,"hard","Binary Search","minimum-cost-to-make-array-equal","Minimum Cost to Make Array Equal",`Changing nums[i] by 1 costs cost[i]; return the minimum total cost to make all elements equal.`,`nums=[1,3,5,2], cost=[2,3,1,14] -> 8`,``),
+  P(493,"hard","Binary Search","reverse-pairs","Reverse Pairs",`Count index pairs i < j with nums[i] > 2 * nums[j].`,`[1,3,2,3,1] -> 2`,``),
+  // ---- Stack ----
+  P(735,"medium","Stack","asteroid-collision","Asteroid Collision",`Asteroids move right (+) or left (-) at equal speed; on collision the smaller explodes, equal sizes both explode. Return the final state.`,`[5,10,-5] -> [5,10]`,``),
+  P(503,"medium","Stack","next-greater-element-ii","Next Greater Element II",`For each element of a circular array, return the next greater element scanning forward with wraparound, or -1.`,`[1,2,1] -> [2,-1,2]`,``),
+  P(496,"easy","Stack","next-greater-element-i","Next Greater Element I",`For each value of nums1 (a subset of nums2), return its next greater element to the right within nums2, or -1.`,`nums1=[4,1,2], nums2=[1,3,4,2] -> [-1,3,-1]`,``),
+  P(907,"medium","Stack","sum-of-subarray-minimums","Sum of Subarray Minimums",`Return the sum of the minimums over every contiguous subarray, modulo 1e9+7.`,`[3,1,2,4] -> 17`,``),
+  P(1021,"easy","Stack","remove-outermost-parentheses","Remove Outermost Parentheses",`Remove the outermost pair of parentheses from each primitive group of a valid parentheses string.`,`"(()())(())" -> "()()()"`,``),
+  P(341,"medium","Stack","flatten-nested-list-iterator","Flatten Nested List Iterator",`Implement an iterator that flattens a nested list of integers, yielding them in order via next()/hasNext().`,`[[1,1],2,[1,1]] -> 1,1,2,1,1`,``),
+  // ---- Linked List ----
+  P(2,"medium","Linked List","add-two-numbers","Add Two Numbers",`Two non-negative numbers are stored as reversed digit lists; return their sum as a reversed digit list.`,`[2,4,3] + [5,6,4] -> [7,0,8]   (342 + 465 = 807)`,``),
+  P(138,"medium","Linked List","copy-list-with-random-pointer","Copy List with Random Pointer",`Deep-copy a list whose nodes each have an extra random pointer to any node or null.`,`return an independent list with identical next and random structure`,``),
+  P(25,"hard","Linked List","reverse-nodes-in-k-group","Reverse Nodes in k-Group",`Reverse the list in consecutive groups of k; a final group smaller than k is left unchanged.`,`[1,2,3,4,5], k = 2 -> [2,1,4,3,5]`,``),
+  P(328,"medium","Linked List","odd-even-linked-list","Odd Even Linked List",`Reorder the list so all odd-position nodes come before all even-position nodes, preserving relative order.`,`[1,2,3,4,5] -> [1,3,5,2,4]`,``),
+  // ---- Trees ----
+  P(337,"medium","Trees","house-robber-iii","House Robber III",`On a binary tree, two directly-connected nodes cannot both be robbed; return the maximum total value.`,`[3,2,3,null,3,null,1] -> 7`,``),
+  P(236,"medium","Trees","lowest-common-ancestor-of-a-binary-tree","Lowest Common Ancestor of a Binary Tree",`Return the lowest node that has both p and q as descendants (a node is a descendant of itself).`,`root=[3,5,1,6,2,0,8], p=5, q=1 -> 3`,``),
+  P(662,"medium","Trees","maximum-width-of-binary-tree","Maximum Width of Binary Tree",`Return the largest level width, counting the gaps between the leftmost and rightmost non-null nodes as if the tree were complete.`,`[1,3,2,5,3,null,9] -> 4`,``),
+  P(113,"medium","Trees","path-sum-ii","Path Sum II",`Return every root-to-leaf path whose node values sum to targetSum.`,`root=[5,4,8,11,null,13,4,7,2,null,null,5,1], target=22 -> [[5,4,11,2],[5,8,4,5]]`,``),
+  P(99,"medium","Trees","recover-binary-search-tree","Recover Binary Search Tree",`Exactly two nodes of a BST were swapped by mistake; restore the tree in place without changing its structure.`,`[1,3,null,null,2] -> [3,1,null,null,2]`,``),
+  P(144,"easy","Trees","binary-tree-preorder-traversal","Binary Tree Preorder Traversal",`Return the node values in preorder: root, then left subtree, then right subtree.`,`[1,null,2,3] -> [1,2,3]`,``),
+  // ---- Heaps / Priority Queue ----
+  P(767,"medium","Heaps / Priority Queue","reorganize-string","Reorganize String",`Rearrange the characters so no two adjacent are equal; return "" if impossible.`,`"aab" -> "aba"`,``),
+  P(692,"medium","Heaps / Priority Queue","top-k-frequent-words","Top K Frequent Words",`Return the k most frequent words, most frequent first, ties broken alphabetically.`,`["i","love","leetcode","i","love","coding"], k = 2 -> ["i","love"]`,``),
+  // ---- Graphs ----
+  P(399,"medium","Graphs","evaluate-division","Evaluate Division",`Given equations like a/b = value, answer division queries; return -1.0 when a query is undetermined.`,`a/b = 2, b/c = 3; query a/c -> 6.0`,``),
+  P(542,"medium","Graphs","01-matrix","01 Matrix",`Return a matrix giving each cell's distance to the nearest 0 (4-directional).`,`[[0,0,0],[0,1,0],[1,1,1]] -> [[0,0,0],[0,1,0],[1,2,1]]`,``),
+  P(695,"medium","Graphs","max-area-of-island","Max Area of Island",`Return the largest island area (count of 4-directionally connected 1s) in the grid.`,`a grid whose biggest island has 6 cells -> 6`,``),
+  P(787,"medium","Graphs","cheapest-flights-within-k-stops","Cheapest Flights Within K Stops",`Return the cheapest fare from src to dst using at most k stops, or -1 if unreachable.`,`4 cities, k = 1 -> 700`,``),
+  P(1368,"hard","Graphs","minimum-cost-to-make-at-least-one-valid-path-in-a-grid","Minimum Cost to Make at Least One Valid Path in a Grid",`Each cell has an arrow; changing a cell's arrow costs 1. Return the minimum cost so following arrows leads from the top-left to the bottom-right.`,`[[1,1,1,1],[2,2,2,2],[1,1,1,1],[2,2,2,2]] -> 3`,``),
+  // ---- Intervals ----
+  P(1094,"medium","Intervals","car-pooling","Car Pooling",`Given trips [passengers, from, to] and a capacity, return true if the car never exceeds capacity.`,`trips=[[2,1,5],[3,3,7]], capacity=4 -> false`,``),
+  // ---- Greedy ----
+  P(135,"hard","Greedy","candy","Candy",`Give each child at least one candy and strictly more than any lower-rated neighbor; return the minimum candies.`,`[1,0,2] -> 5`,``),
+  P(2938,"medium","Greedy","separate-black-and-white-balls","Separate Black and White Balls",`All '1' balls must end to the right of all '0' balls; adjacent swaps cost 1. Return the minimum swaps.`,`"101" -> 1`,``),
+  P(2029,"medium","Greedy","stone-game-ix","Stone Game IX",`Players alternately remove a stone; a player loses if the running sum of removed values becomes divisible by 3. Return true if Alice wins.`,`[2,1] -> true`,``),
+  P(1927,"medium","Greedy","sum-game","Sum Game",`A digit string with some '?' is split in half; two players fill the '?'. Return true if the second player can force the two halves to differ in sum.`,`"5023" -> false`,``),
+  // ---- Dynamic Programming ----
+  P(486,"medium","Dynamic Programming","predict-the-winner","Predict the Winner",`Two players alternately take from either end, summing their picks; return true if player 1 can end with at least as much as player 2.`,`[1,5,2] -> false`,``),
+  P(1140,"medium","Dynamic Programming","stone-game-ii","Stone Game II",`Players take the first X (1 <= X <= 2M, M starts at 1 and grows to X) piles; maximize the first player's stones.`,`[2,7,9,4,4] -> 10`,``),
+  P(97,"medium","Dynamic Programming","interleaving-string","Interleaving String",`Return true if s3 can be formed by interleaving s1 and s2 while preserving each string's order.`,`s1="aabcc", s2="dbbca", s3="aadbbcbcac" -> true`,``),
+  P(118,"easy","Dynamic Programming","pascals-triangle","Pascal's Triangle",`Return the first numRows rows of Pascal's triangle.`,`5 -> [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]`,``),
+  P(123,"hard","Dynamic Programming","best-time-to-buy-and-sell-stock-iii","Best Time to Buy and Sell Stock III",`Maximize profit using at most two non-overlapping buy/sell transactions.`,`[3,3,5,0,0,3,1,4] -> 6`,``),
+  P(1463,"hard","Dynamic Programming","cherry-pickup-ii","Cherry Pickup II",`Two robots start at the top-left and top-right and move down collecting cherries; a cell shared in a step counts once. Maximize the total.`,`[[3,1,1],[2,5,1],[1,5,5],[2,1,1]] -> 24`,``),
+  P(740,"medium","Dynamic Programming","delete-and-earn","Delete and Earn",`Earning nums[i] also deletes every copy of nums[i]-1 and nums[i]+1; maximize the total earned.`,`[3,4,2] -> 6`,``),
+  P(1335,"hard","Dynamic Programming","minimum-difficulty-of-a-job-schedule","Minimum Difficulty of a Job Schedule",`Do the ordered jobs over d days (each day's difficulty is its hardest job); minimize the summed difficulty, or -1 if impossible.`,`jobDifficulty=[6,5,4,3,2,1], d=2 -> 7`,``),
+  // ---- Bit Manipulation / Math ----
+  P(9,"easy","Bit Manipulation / Math","palindrome-number","Palindrome Number",`Return true if the integer reads the same forwards and backwards (negatives are never palindromes).`,`121 -> true, -121 -> false`,``),
+  P(7,"medium","Bit Manipulation / Math","reverse-integer","Reverse Integer",`Reverse the digits of a signed 32-bit integer; return 0 if the result overflows.`,`123 -> 321, -120 -> -21`,``),
+  P(13,"easy","Bit Manipulation / Math","roman-to-integer","Roman to Integer",`Convert a Roman numeral string to its integer value.`,`"MCMXCIV" -> 1994`,``),
+  P(12,"medium","Bit Manipulation / Math","integer-to-roman","Integer to Roman",`Convert an integer in [1,3999] to its Roman numeral representation.`,`1994 -> "MCMXCIV"`,``),
+  P(202,"easy","Bit Manipulation / Math","happy-number","Happy Number",`Repeatedly replace n with the sum of the squares of its digits; return true if this reaches 1.`,`19 -> true`,``),
+  P(50,"medium","Bit Manipulation / Math","powx-n","Pow(x, n)",`Compute x raised to the integer power n (n may be negative) in O(log n).`,`x = 2.0, n = 10 -> 1024.0`,``),
+  P(564,"hard","Bit Manipulation / Math","find-the-closest-palindrome","Find the Closest Palindrome",`Return, as a string, the palindrome closest in value to n; on a tie choose the smaller.`,`"123" -> "121"`,``)
 ];
+
+// Company tag: mark the Amazon-list problems (existing + newly added) so the picker
+// can offer an "Amazon" group. Slugs not present in PROBLEMS are simply ignored.
+const AMAZON = new Set([
+  "two-sum","longest-substring-without-repeating-characters","best-time-to-buy-and-sell-stock","lru-cache",
+  "number-of-islands","koko-eating-bananas","container-with-most-water","trapping-rain-water","merge-intervals",
+  "course-schedule","3sum","median-of-two-sorted-arrays","minimum-window-substring","longest-palindromic-substring",
+  "group-anagrams","merge-two-sorted-lists","word-ladder","maximum-subarray","subsets","top-k-frequent-elements",
+  "climbing-stairs","rotting-oranges","meeting-rooms-ii","two-sum-ii-input-array-is-sorted","valid-parentheses",
+  "find-minimum-in-rotated-sorted-array","binary-tree-maximum-path-sum","task-scheduler","valid-anagram","single-number",
+  "linked-list-cycle","evaluate-reverse-polish-notation","search-in-rotated-sorted-array","alien-dictionary",
+  "merge-k-sorted-lists","validate-binary-search-tree","serialize-and-deserialize-binary-tree","largest-rectangle-in-histogram",
+  "daily-temperatures","contains-duplicate","word-break","palindrome-partitioning","product-of-array-except-self",
+  "kth-largest-element-in-an-array","valid-palindrome","flood-fill","reverse-linked-list","jump-game-ii","car-fleet","reorder-list",
+  "majority-element","check-if-array-is-sorted-and-rotated","concatenation-of-array","longest-consecutive-sequence","ransom-note",
+  "longest-common-prefix","isomorphic-strings","smallest-missing-integer-greater-than-sequential-prefix-sum",
+  "find-all-duplicates-in-an-array","row-with-maximum-ones","majority-element-ii","valid-sudoku","subarray-sum-equals-k",
+  "contiguous-array","next-permutation","count-and-say","range-sum-query-immutable","sort-colors",
+  "remove-duplicates-from-sorted-array","merge-sorted-array","remove-element","find-the-index-of-the-first-occurrence-in-a-string",
+  "is-subsequence","number-of-subsequences-that-satisfy-the-given-sum-condition","fruit-into-baskets","sliding-window-maximum",
+  "maximum-average-subarray-i","shortest-subarray-with-sum-at-least-k","maximum-points-you-can-obtain-from-cards",
+  "longest-substring-with-at-least-k-repeating-characters","frequency-of-the-most-frequent-element","find-all-anagrams-in-a-string",
+  "length-of-longest-subarray-with-at-most-k-frequency","maximum-length-substring-with-two-occurrences","grumpy-bookstore-owner",
+  "minimum-swaps-to-group-all-1s-together-ii","maximum-white-tiles-covered-by-a-carpet","split-array-largest-sum",
+  "capacity-to-ship-packages-within-d-days","single-element-in-a-sorted-array","search-insert-position",
+  "find-first-and-last-position-of-element-in-sorted-array","sqrtx","peak-index-in-a-mountain-array",
+  "minimum-cost-to-make-array-equal","reverse-pairs","asteroid-collision","next-greater-element-ii","next-greater-element-i",
+  "sum-of-subarray-minimums","remove-outermost-parentheses","flatten-nested-list-iterator","add-two-numbers",
+  "copy-list-with-random-pointer","reverse-nodes-in-k-group","odd-even-linked-list","house-robber-iii",
+  "lowest-common-ancestor-of-a-binary-tree","maximum-width-of-binary-tree","path-sum-ii","recover-binary-search-tree",
+  "binary-tree-preorder-traversal","reorganize-string","top-k-frequent-words","evaluate-division","01-matrix",
+  "max-area-of-island","cheapest-flights-within-k-stops","minimum-cost-to-make-at-least-one-valid-path-in-a-grid",
+  "car-pooling","candy","separate-black-and-white-balls","stone-game-ix","sum-game","predict-the-winner","stone-game-ii",
+  "interleaving-string","pascals-triangle","best-time-to-buy-and-sell-stock-iii","cherry-pickup-ii","delete-and-earn",
+  "minimum-difficulty-of-a-job-schedule","palindrome-number","reverse-integer","roman-to-integer","integer-to-roman",
+  "happy-number","powx-n","find-the-closest-palindrome"
+]);
+PROBLEMS.forEach(p=>{ p.companies = AMAZON.has(p.id) ? ["Amazon"] : []; });
 
 /* ============================ interviewer brain ============================ */
 function systemBase(){
@@ -990,22 +1223,27 @@ function renderProblem(){
   problemPane.innerHTML =
     `<div class="eyebrow">Problem · #${p.num}</div>
      <h2>${p.title}</h2>
-     <div><span class="chip ${p.diff}">${p.diff}</span><span class="chip pattern">${p.pattern}</span></div>
+     <div><span class="chip ${p.diff}">${p.diff}</span><span class="chip pattern">${p.pattern}</span>${(p.companies||[]).map(c=>`<span class="chip company">${c}</span>`).join("")}</div>
      <div class="body">${p.html}</div>`;
 }
 function renderSelect(){
-  // Group the picker by pattern (in the order patterns first appear in PROBLEMS).
+  const opt = p=>`<option value="${p.id}">#${p.num} ${p.title} · ${p.diff}</option>`;
+  // Company group (Amazon) first, then the algorithmic-pattern groups (order of first
+  // appearance in PROBLEMS). Company-tagged problems also appear under their pattern.
+  const amazon = PROBLEMS.filter(p=>(p.companies||[]).includes("Amazon"));
+  let html = amazon.length
+    ? `<optgroup label="Amazon (${amazon.length})">`+amazon.map(opt).join("")+`</optgroup>`
+    : "";
   const groups = [];
   PROBLEMS.forEach(p=>{
     let g = groups.find(x=>x.pattern===p.pattern);
     if(!g){ g={pattern:p.pattern, items:[]}; groups.push(g); }
     g.items.push(p);
   });
-  problemSelect.innerHTML = groups.map(g=>
-    `<optgroup label="${g.pattern}">`+
-    g.items.map(p=>`<option value="${p.id}">#${p.num} ${p.title} · ${p.diff}</option>`).join("")+
-    `</optgroup>`
+  html += groups.map(g=>
+    `<optgroup label="${g.pattern}">`+g.items.map(opt).join("")+`</optgroup>`
   ).join("");
+  problemSelect.innerHTML = html;
 }
 
 /* ============================ turns ============================ */

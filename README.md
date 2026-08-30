@@ -30,11 +30,13 @@ stored. See [Set up the proxy](#set-up-the-proxy-required) below.
   matching default voice.
 - **Adjustable speech speed**, a **resizable divider** between the problem and editor
   panes, and a syntax-highlighted Java editor (CodeMirror).
-- **A pattern-based problem bank** (Java): ~90 curated LeetCode problems grouped by
-  the 15 core interview patterns (Arrays & Hashing, Two Pointers, Sliding Window,
-  Stack, Binary Search, Linked List, Trees, Tries, Heaps, Backtracking, Graphs,
-  Intervals, Greedy, DP, Bit/Math). Each shows a short summary and links to the full
-  statement; the picker is grouped so you can drill one pattern at a time.
+- **A curated problem bank** (Java): ~180 LeetCode problems grouped by the 15 core
+  interview patterns (Arrays & Hashing, Two Pointers, Sliding Window, Stack, Binary
+  Search, Linked List, Trees, Tries, Heaps, Backtracking, Graphs, Intervals, Greedy,
+  DP, Bit/Math), plus a company **"Amazon"** group at the top of the picker for
+  Amazon-frequent questions. Each shows a short original summary, a real Java starter
+  signature, and a reference link; the picker is grouped so you can drill one pattern
+  (or company) at a time.
 
 ## Getting started
 
