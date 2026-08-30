@@ -70,7 +70,13 @@ export function activate(context: vscode.ExtensionContext): void {
     let k = "";
     try { k = await getKey(context.secrets); } catch { /* keychain unavailable */ }
     openSettingsPage(context, settings(), !!k, {
-      save: async (patch, key) => { await setSettings(context.globalState, patch); if (key !== undefined) await setKey(context.secrets, key); sendSettings(); },
+      save: async (patch, key) => {
+        const next = await setSettings(context.globalState, patch);
+        if (key !== undefined) await setKey(context.secrets, key);
+        sendSettings();
+        const k = await getKey(context.secrets);
+        return { settings: next, keyIsSet: !!k };
+      },
       testVoice: async (s) => {
         const text = "Hi, I'm " + s.interviewerName + ". Let's begin when you're ready.";
         if (s.voiceMode === "browser") return { kind: "browser", text, rate: s.speechRate };

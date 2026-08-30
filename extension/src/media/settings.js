@@ -7,15 +7,33 @@ const VOICES = ["alloy","ash","ballad","coral","echo","fable","onyx","nova","sag
 function fill(sel, values) { for (const v of values) { const o = document.createElement("option"); o.value = v; o.textContent = v; sel.appendChild(o); } }
 fill($("model"), MODELS); fill($("transcribeModel"), STT); fill($("ttsModel"), TTS); fill($("voice"), VOICES);
 
+// The real key is never sent back to the webview. When one is saved we show a
+// fixed mask (dots) in the field so it visibly reads as "stored"; typing replaces
+// it, leaving the dots keeps the existing key.
+const SAVED_MASK = "••••••••••••";
+let hasSavedKey = false;
+let keyTouched = false;
+
 function apply(s, keyIsSet) {
   $("model").value = s.model; $("transcribeModel").value = s.transcribeModel;
   $("ttsModel").value = s.ttsModel; $("voice").value = s.voice; $("voiceMode").value = s.voiceMode;
   $("speechRate").value = String(s.speechRate); $("interviewerName").value = s.interviewerName;
   $("interviewerPronoun").value = s.interviewerPronoun;
+  hasSavedKey = keyIsSet;
+  keyTouched = false;
+  $("apiKey").value = keyIsSet ? SAVED_MASK : "";
   $("keyNote").textContent = keyIsSet
-    ? "A key is saved securely (OS keychain). Leave blank to keep it."
+    ? "A key is saved securely (OS keychain). Type to replace it, or leave the dots to keep it."
     : "No key saved yet. Your key is stored in VS Code SecretStorage, never in plaintext.";
 }
+
+$("apiKey").addEventListener("focus", () => {
+  if (!keyTouched && $("apiKey").value === SAVED_MASK) $("apiKey").value = "";
+});
+$("apiKey").addEventListener("input", () => { keyTouched = true; });
+$("apiKey").addEventListener("blur", () => {
+  if (!keyTouched && hasSavedKey && $("apiKey").value === "") $("apiKey").value = SAVED_MASK;
+});
 function collect() {
   return {
     model: $("model").value, transcribeModel: $("transcribeModel").value, ttsModel: $("ttsModel").value,
@@ -24,9 +42,12 @@ function collect() {
   };
 }
 $("save").onclick = () => {
-  const key = $("apiKey").value.trim();
-  vscode.postMessage({ type: "save", settings: collect(), key: key || undefined });
-  $("apiKey").value = "";
+  const raw = $("apiKey").value;
+  // Send a key only if the user actually typed a new one; the mask (or blank) means
+  // "keep the existing key" (key: undefined). The host reposts init after saving,
+  // which repopulates the mask so it's clear the key persisted.
+  const key = (keyTouched && raw && raw !== SAVED_MASK) ? raw.trim() : undefined;
+  vscode.postMessage({ type: "save", settings: collect(), key });
 };
 let testAudio = null;
 function resetTestBtn() { $("test").disabled = false; $("test").textContent = "Test voice"; }

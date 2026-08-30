@@ -15,7 +15,7 @@ export type TestVoiceResult =
   | { kind: "error"; message: string };
 
 export interface SettingsHandlers {
-  save(patch: Partial<Settings>, key?: string): Promise<void>;
+  save(patch: Partial<Settings>, key?: string): Promise<{ settings: Settings; keyIsSet: boolean }>;
   testVoice(s: Settings): Promise<TestVoiceResult>;
 }
 
@@ -24,6 +24,7 @@ let panel: vscode.WebviewPanel | undefined;
 export function openSettingsPage(
   ctx: vscode.ExtensionContext, current: Settings, keyIsSet: boolean, handlers: SettingsHandlers
 ): void {
+  // `current` is reassigned after a save so the page's snapshot stays fresh.
   if (panel) { panel.reveal(vscode.ViewColumn.Active); panel.webview.postMessage({ type: "init", settings: current, keyIsSet }); return; }
   panel = vscode.window.createWebviewPanel("onsiteSettings", "Onsite Settings", vscode.ViewColumn.Active,
     { enableScripts: true, localResourceRoots: [vscode.Uri.joinPath(ctx.extensionUri, "src", "media")] });
@@ -35,7 +36,12 @@ export function openSettingsPage(
     .replace("{{settingsJs}}", read(ctx, "settings.js"));
   panel.webview.onDidReceiveMessage(async (m: any) => {
     if (m.type === "ready") panel!.webview.postMessage({ type: "init", settings: current, keyIsSet });
-    else if (m.type === "save") { await handlers.save(m.settings, m.key); vscode.window.showInformationMessage("Onsite settings saved."); }
+    else if (m.type === "save") {
+      const res = await handlers.save(m.settings, m.key);
+      current = res.settings;
+      panel!.webview.postMessage({ type: "init", settings: res.settings, keyIsSet: res.keyIsSet });
+      vscode.window.showInformationMessage("Onsite settings saved.");
+    }
     else if (m.type === "testVoice") {
       const result = await handlers.testVoice({ ...current, ...m.settings });
       panel!.webview.postMessage({ type: "testResult", result });

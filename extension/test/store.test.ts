@@ -33,3 +33,11 @@ test("key round-trips through secrets", async () => {
   await setKey(s, "sk-abc");
   assert.equal(await getKey(s), "sk-abc");
 });
+
+test("setKey('') deletes the key — so the settings UI must send undefined to keep it", async () => {
+  const s = fakeSecrets();
+  await setKey(s, "sk-live");
+  assert.equal(await getKey(s), "sk-live");
+  await setKey(s, "");           // empty string = remove
+  assert.equal(await getKey(s), "");
+});
