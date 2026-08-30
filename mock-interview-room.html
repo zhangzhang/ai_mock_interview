@@ -1315,8 +1315,12 @@ function openSettings(){ if(!settingsModal.open) settingsModal.showModal(); voic
 function closeSettings(){ if(settingsModal.open) settingsModal.close(); }
 voiceBtn.onclick = ()=>{ settingsModal.open ? closeSettings() : openSettings(); };
 document.getElementById("closeSettings").onclick = closeSettings;
-// Backdrop click (target is the dialog element itself, not a child) closes it.
-settingsModal.addEventListener("click", e=>{ if(e.target===settingsModal) closeSettings(); });
+// Backdrop click closes it — but only when the press STARTED on the backdrop. Without
+// this guard, drag-selecting text in a field (e.g. the interviewer name) and releasing
+// over the dialog's padding fires a click whose target is the dialog, closing it.
+let mouseDownOnBackdrop = false;
+settingsModal.addEventListener("mousedown", e=>{ mouseDownOnBackdrop = (e.target===settingsModal); });
+settingsModal.addEventListener("click", e=>{ if(e.target===settingsModal && mouseDownOnBackdrop) closeSettings(); });
 // Native close (✕, backdrop, or Escape) is the single place the icon un-highlights.
 settingsModal.addEventListener("close", ()=>{ voiceBtn.classList.remove("on"); });
 document.getElementById("ttsSeg").addEventListener("click", e=>{
