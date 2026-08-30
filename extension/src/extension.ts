@@ -154,12 +154,15 @@ export function activate(context: vscode.ExtensionContext): void {
       case "audioCaptured": {
         const key = await requireKey(); if (!key || !session) break;
         await withBusy(async () => {
+          logLine(`Audio received: ${m.bytes.length} bytes (${m.mime}) — transcribing with ${settings().transcribeModel}`);
           provider.post({ type: "presence", state: "thinking", label: "transcribing…" });
           try {
             const text = await transcribe(key, settings().transcribeModel, new Uint8Array(m.bytes), m.mime);
+            logLine(text ? `Transcribed: "${text}"` : "Transcription returned empty text");
             if (text) await userTurn(text);
             else provider.post({ type: "presence", state: "idle", label: "listening for you" });
           } catch (e: any) {
+            logLine(`Transcription FAILED: ${e?.message || e}`);
             provider.post({ type: "banner", kind: "err", html: "Transcription failed: " + (e?.message || e) });
           }
         });

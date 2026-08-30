@@ -30,7 +30,14 @@ function renderProblems(groups) {
     sel.appendChild(og);
   }
 }
-$("startBtn").onclick = () => vscode.postMessage({ type: "startInterview", problemId: $("problemSelect").value });
+$("startBtn").onclick = () => {
+  // Enable hands-free voice for this interview and prime the mic permission NOW,
+  // while we still have the click's user gesture — otherwise the auto-arm after
+  // the greeting (which happens seconds later) can't prompt for the mic.
+  handsFree = true;
+  ensureMic();
+  vscode.postMessage({ type: "startInterview", problemId: $("problemSelect").value });
+};
 $("settingsBtn").onclick = () => vscode.postMessage({ type: "openSettings" });
 $("settingsBtn2").onclick = () => vscode.postMessage({ type: "openSettings" });
 $("sendBtn").onclick = sendTyped;
@@ -87,7 +94,9 @@ async function ensureMic() {
     audioCtx.createMediaStreamSource(micStream).connect(analyser);
     return true;
   } catch (e) {
-    $("banner").hidden = false; $("banner").textContent = "Mic blocked — type instead.";
+    handsFree = false; // stop auto-retrying getUserMedia (avoids repeated prompts)
+    $("banner").hidden = false;
+    $("banner").textContent = "Mic unavailable (" + ((e && e.name) || "denied") + ") — type your answers instead.";
     return false;
   }
 }
